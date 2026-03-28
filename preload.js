@@ -1,18 +1,20 @@
-/**
- * preload.js
- * Secure context bridge — exposes a safe API to the renderer (index.html)
- * without enabling full Node.js access.
- */
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('solenApp', {
   // App info
-  getVersion:  () => ipcRenderer.invoke('app:version'),
-  getPlatform: () => ipcRenderer.invoke('app:platform'),
+  getVersion:     () => ipcRenderer.invoke('app:version'),
+  getPlatform:    () => ipcRenderer.invoke('app:platform'),
+  getDataPath:    () => ipcRenderer.invoke('app:dataPath'),
 
-  // Native save dialog (for CSV / JSON exports)
-  showSaveDialog: (opts) => ipcRenderer.invoke('dialog:save', opts),
+  // File-based storage — unlimited, persistent, auto-backed-up
+  readStore:      ()       => ipcRenderer.invoke('store:read'),
+  writeStore:     (data)   => ipcRenderer.invoke('store:write', data),
+  backupNow:      ()       => ipcRenderer.invoke('store:backup'),
 
-  // Native open dialog (for JSON import)
-  showOpenDialog: (opts) => ipcRenderer.invoke('dialog:open', opts),
+  // Native dialogs
+  showSaveDialog: (opts)   => ipcRenderer.invoke('dialog:save', opts),
+  showOpenDialog: (opts)   => ipcRenderer.invoke('dialog:open', opts),
+
+  // Are we running inside Electron?
+  isElectron: true,
 });
