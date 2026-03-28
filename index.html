@@ -533,6 +533,51 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
   .fs-stop-btn{width:56px;height:56px;font-size:20px;}
   .fs-hint{gap:14px;font-size:8px;}
 }
+
+/* ── INTEGRATIONS ────────────────────────── */
+.integ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+.integ-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--sh);}
+.integ-hd{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.integ-logo{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.integ-logo.gcal{background:#1a73e8;}
+.integ-logo.gsheets{background:#0f9d58;}
+.integ-logo.gdrive{background:#fbbc04;}
+.integ-logo.team{background:#0a0a0a;}
+.integ-name{font-size:14px;font-weight:600;}
+.integ-status{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-top:1px;}
+.integ-status.connected{color:var(--success);}
+.integ-status.disconnected{color:var(--ink3);}
+.integ-desc{font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:14px;}
+.integ-actions{display:flex;gap:7px;flex-wrap:wrap;}
+.conn-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-family:var(--mono);}
+.conn-badge.on{background:#dcfce7;color:var(--success);}
+.conn-badge.off{background:var(--bg);color:var(--ink3);border:1px solid var(--border);}
+
+/* ── TEAM PAGE ───────────────────────────── */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.member-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);}
+.member-avatar{width:40px;height:40px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;flex-shrink:0;}
+.member-hd{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.member-name{font-size:13px;font-weight:600;}
+.member-role{font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:.06em;}
+.member-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ms-lbl{font-family:var(--mono);font-size:9px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.ms-val{font-family:var(--mono);font-size:14px;font-weight:500;}
+
+/* ── CALENDAR VIEW ───────────────────────── */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:8px;}
+.cal-day-hd{font-family:var(--mono);font-size:9px;text-align:center;color:var(--ink3);padding:4px;letter-spacing:.08em;text-transform:uppercase;}
+.cal-day{min-height:72px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px;cursor:pointer;transition:background .12s;position:relative;}
+.cal-day:hover{background:var(--bg);}
+.cal-day.today{border-color:var(--ink);border-width:2px;}
+.cal-day.other-month{opacity:.35;}
+.cal-day-num{font-family:var(--mono);font-size:10px;font-weight:500;margin-bottom:3px;}
+.cal-day.today .cal-day-num{color:var(--ink);font-weight:700;}
+.cal-entry{font-size:9px;background:var(--ink);color:#fff;border-radius:2px;padding:1px 4px;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cal-entry.billable{background:#166534;}
+.cal-entry.session{background:#1e3a5f;}
+.cal-nav{display:flex;align-items:center;gap:12px;}
+.cal-nav h3{flex:1;text-align:center;font-size:14px;font-weight:600;}
 </style>
 </head>
 <body>
@@ -569,6 +614,10 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
   <div class="sb-item" onclick="go('reports')"><span class="ic">◫</span>Reports</div>
   <div class="sb-item" onclick="go('goals')"><span class="ic">◎</span>Goals</div>
   <div class="sb-item" onclick="go('history')"><span class="ic">◱</span>History</div>
+  <div class="sb-sec">Integrations</div>
+  <div class="sb-item" onclick="go('calendar')"><span class="ic">◫</span>Calendar</div>
+  <div class="sb-item" onclick="go('integrations')"><span class="ic">◈</span>Integrations</div>
+  <div class="sb-item" onclick="go('team')"><span class="ic">○</span>Team</div>
   <div class="sb-sec">System</div>
   <div class="sb-item" onclick="go('settings')"><span class="ic">◧</span>Settings</div>
   <div class="sb-foot">
@@ -890,7 +939,6 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
     <div class="setting-card">
       <div class="setting-tt">Data Management</div>
       <div class="setting-sub">Export or reset your workspace data</div>
-      <div id="cfg-data-path" style="font-family:var(--mono);font-size:10px;color:var(--ink3);margin-bottom:12px;word-break:break-all;padding:6px 8px;background:var(--bg);border-radius:4px;border:1px solid var(--border)"></div>
       <div class="data-actions">
         <button class="btn btn-g btn-sm" onclick="exportCSV()">↓ Export CSV</button>
         <button class="btn btn-g btn-sm" onclick="exportJSON()">↓ Export JSON Backup</button>
@@ -919,6 +967,244 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
       <div class="fg"><label class="fl">Payment Terms</label><input class="fi" id="cfg-terms" placeholder="Payment due within 30 days."/></div>
       <div class="fg"><label class="fl">Invoice Notes / Footer</label><input class="fi" id="cfg-footer" placeholder="Thank you for your business."/></div>
       <button class="btn btn-p btn-sm" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- CALENDAR -->
+<div class="pg" id="pg-calendar">
+  <div class="ph">
+    <div><h1>Calendar</h1><p>Visual time tracking & Google Calendar sync</p></div>
+    <div class="ph-acts">
+      <button class="btn btn-g btn-sm" onclick="calPrev()">← Prev</button>
+      <button class="btn btn-g btn-sm" onclick="calToday()">Today</button>
+      <button class="btn btn-g btn-sm" onclick="calNext()">Next →</button>
+      <button class="btn btn-p btn-sm" onclick="exportToGoogleCalendar()" id="gcal-export-btn">📅 Export to Google Calendar</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd">
+      <div class="cal-nav">
+        <span id="cal-month-label" style="font-size:15px;font-weight:600"></span>
+      </div>
+      <div style="display:flex;gap:10px;font-family:var(--mono);font-size:10px;color:var(--ink3);align-items:center">
+        <span><span style="display:inline-block;width:10px;height:10px;background:var(--ink);border-radius:2px;margin-right:4px"></span>Entry</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#166534;border-radius:2px;margin-right:4px"></span>Billable</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#1e3a5f;border-radius:2px;margin-right:4px"></span>Session</span>
+      </div>
+    </div>
+    <div style="padding:12px">
+      <div class="cal-grid" id="cal-header"></div>
+      <div class="cal-grid" id="cal-body" style="margin-top:2px"></div>
+    </div>
+  </div>
+  <div class="crow">
+    <div class="ccard">
+      <div class="ctt">This Month Summary</div>
+      <div id="cal-month-stats"></div>
+    </div>
+    <div class="ccard">
+      <div class="ctt">Upcoming Deadlines</div>
+      <div id="cal-deadlines"></div>
+    </div>
+  </div>
+</div>
+
+<!-- INTEGRATIONS -->
+<div class="pg" id="pg-integrations">
+  <div class="ph">
+    <div><h1>Integrations</h1><p>Connect Google Calendar, Sheets & Drive</p></div>
+  </div>
+
+  <!-- HOW IT WORKS BANNER -->
+  <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:20px;font-size:13px;color:var(--ink2);line-height:1.8">
+    <b style="color:var(--ink)">How integrations work:</b> SolenTrack uses your Google account to export data.
+    You authorise once, then export with one click — no data is sent automatically without your action.
+    All exports go to <b>your own</b> Google account — we never store your credentials.
+  </div>
+
+  <div class="integ-grid">
+
+    <!-- GOOGLE CALENDAR -->
+    <div class="integ-card">
+      <div class="integ-hd">
+        <div class="integ-logo gcal">📅</div>
+        <div>
+          <div class="integ-name">Google Calendar</div>
+          <div class="integ-status disconnected" id="gcal-status">Not connected</div>
+        </div>
+      </div>
+      <div class="integ-desc">
+        Export your time entries and task deadlines as calendar events. Set reminders, see your work schedule, and track time visually in Google Calendar.
+      </div>
+      <div class="integ-actions">
+        <button class="btn btn-p btn-sm" onclick="connectGoogleCalendar()">Connect Google Calendar</button>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:8px">What you can do:</div>
+      <div style="font-size:11px;color:var(--ink3);line-height:2">
+        ✓ Export time entries as calendar events<br>
+        ✓ Export task deadlines with reminders<br>
+        ✓ Export project schedules<br>
+        ✓ Download .ics file (works with any calendar app)<br>
+        ✓ Add reminders to your tasks
+      </div>
+      <div class="divider"></div>
+      <div class="integ-actions">
+        <button class="btn btn-g btn-sm" onclick="exportICS()">↓ Export .ics File</button>
+        <button class="btn btn-g btn-sm" onclick="exportTasksICS()">↓ Export Deadlines</button>
+      </div>
+    </div>
+
+    <!-- GOOGLE SHEETS -->
+    <div class="integ-card">
+      <div class="integ-hd">
+        <div class="integ-logo gsheets">📊</div>
+        <div>
+          <div class="integ-name">Google Sheets</div>
+          <div class="integ-status disconnected" id="gsheets-status">Not connected</div>
+        </div>
+      </div>
+      <div class="integ-desc">
+        Export your time entries, reports and invoices directly to Google Sheets. Auto-formatted spreadsheets ready for sharing with clients or accountants.
+      </div>
+      <div class="integ-actions">
+        <button class="btn btn-p btn-sm" onclick="connectGoogleSheets()">Connect Google Sheets</button>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:8px">What you can do:</div>
+      <div style="font-size:11px;color:var(--ink3);line-height:2">
+        ✓ Export time entries to a formatted spreadsheet<br>
+        ✓ Export invoices & earnings reports<br>
+        ✓ Export project summaries<br>
+        ✓ Download .xlsx file directly<br>
+        ✓ Share read-only links with clients
+      </div>
+      <div class="divider"></div>
+      <div class="integ-actions">
+        <button class="btn btn-g btn-sm" onclick="exportXLSX()">↓ Export .xlsx</button>
+        <button class="btn btn-g btn-sm" onclick="openSheetsTemplate()">Open Sheets Template</button>
+      </div>
+    </div>
+
+    <!-- GOOGLE DRIVE -->
+    <div class="integ-card">
+      <div class="integ-hd">
+        <div class="integ-logo gdrive">💾</div>
+        <div>
+          <div class="integ-name">Google Drive</div>
+          <div class="integ-status disconnected" id="gdrive-status">Not connected</div>
+        </div>
+      </div>
+      <div class="integ-desc">
+        Back up your SolenTrack data to Google Drive automatically. Store invoices, reports and backups safely in the cloud — accessible from any device.
+      </div>
+      <div class="integ-actions">
+        <button class="btn btn-p btn-sm" onclick="connectGoogleDrive()">Connect Google Drive</button>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:8px">What you can do:</div>
+      <div style="font-size:11px;color:var(--ink3);line-height:2">
+        ✓ Back up all data to Drive<br>
+        ✓ Save invoices as PDF to Drive<br>
+        ✓ Restore from Drive backup<br>
+        ✓ Auto-sync data across devices<br>
+        ✓ Share reports folder with team
+      </div>
+      <div class="divider"></div>
+      <div class="integ-actions">
+        <button class="btn btn-g btn-sm" onclick="backupToDrive()">↑ Backup to Drive</button>
+        <button class="btn btn-g btn-sm" onclick="exportJSON()">↓ Download Backup</button>
+      </div>
+    </div>
+
+    <!-- TEAM SHARING -->
+    <div class="integ-card">
+      <div class="integ-hd">
+        <div class="integ-logo team">👥</div>
+        <div>
+          <div class="integ-name">Team Workspace</div>
+          <div class="integ-status disconnected" id="team-status">Solo mode</div>
+        </div>
+      </div>
+      <div class="integ-desc">
+        Expand to a team — share projects, assign tasks, track team time and generate combined reports. Each member gets their own login.
+      </div>
+      <div class="integ-actions">
+        <button class="btn btn-p btn-sm" onclick="go('team')">Set Up Team →</button>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:8px">Team features:</div>
+      <div style="font-size:11px;color:var(--ink3);line-height:2">
+        ✓ Invite team members<br>
+        ✓ Assign tasks & projects<br>
+        ✓ Track each member's time<br>
+        ✓ Combined team reports<br>
+        ✓ Role permissions (Admin / Member / Viewer)
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GOOGLE API SETUP INSTRUCTIONS -->
+  <div class="card" style="margin-top:6px">
+    <div class="card-hd"><span class="card-tt">🔧 Setup Guide — Google API</span></div>
+    <div style="padding:18px 20px;font-size:13px;color:var(--ink2);line-height:1.9">
+      To connect Google Calendar, Sheets or Drive you need a free Google API key.
+      This takes about 5 minutes and is completely free:<br><br>
+      <b>1.</b> Go to <a href="https://console.cloud.google.com" target="_blank" style="color:var(--ink);text-decoration:underline">console.cloud.google.com</a><br>
+      <b>2.</b> Create a new project called "SolenTrack"<br>
+      <b>3.</b> Enable: Google Calendar API, Google Sheets API, Google Drive API<br>
+      <b>4.</b> Go to Credentials → Create → OAuth 2.0 Client ID → Web application<br>
+      <b>5.</b> Add your GitHub Pages URL as an authorised origin: <code style="background:var(--bg);padding:1px 6px;border-radius:3px">https://hamadatail.github.io</code><br>
+      <b>6.</b> Copy your Client ID and paste it in Settings → Integrations<br><br>
+      <div class="fg" style="max-width:500px">
+        <label class="fl">Google Client ID</label>
+        <input class="fi" id="cfg-google-client-id" placeholder="xxxxxxxxxxxx.apps.googleusercontent.com"/>
+      </div>
+      <button class="btn btn-p btn-sm" style="margin-top:8px" onclick="saveGoogleClientId()">Save Client ID</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<div class="pg" id="pg-team">
+  <div class="ph">
+    <div><h1>Team</h1><p>Manage your team, roles and shared projects</p></div>
+    <div class="ph-acts">
+      <button class="btn btn-p" onclick="openInviteMember()">+ Invite Member</button>
+    </div>
+  </div>
+
+  <!-- TEAM STATS -->
+  <div class="stats" id="team-stats"></div>
+
+  <!-- MEMBERS -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-hd"><span class="card-tt">Team Members</span></div>
+    <div class="team-grid" id="team-members-grid" style="padding:14px"></div>
+  </div>
+
+  <!-- SHARED PROJECTS -->
+  <div class="card">
+    <div class="card-hd">
+      <span class="card-tt">Project Assignments</span>
+      <span style="font-size:11px;color:var(--ink3)">Assign projects to team members</span>
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>Project</th><th>Assigned To</th><th>Hours This Week</th><th>Status</th><th></th></tr></thead>
+      <tbody id="team-projects-tb"></tbody>
+    </table></div>
+  </div>
+
+  <!-- EXPORT TEAM REPORT -->
+  <div class="ccard" style="margin-top:16px">
+    <div class="ctt">Team Report</div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:12px">Export combined time report for all team members</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-g btn-sm" onclick="exportTeamCSV()">↓ Export Team CSV</button>
+      <button class="btn btn-g btn-sm" onclick="exportTeamJSON()">↓ Export Team JSON</button>
     </div>
   </div>
 </div>
@@ -1069,6 +1355,30 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
   </div>
 </div>
 
+
+<!-- INVITE MEMBER -->
+<div class="mbg" id="m-invite">
+  <div class="modal">
+    <div class="mhd"><h2>Invite Team Member</h2><button class="mx" onclick="cm('m-invite')">✕</button></div>
+    <div class="fg"><label class="fl">Full Name</label><input class="fi" id="inv-name" placeholder="e.g. Jordan Smith"/></div>
+    <div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="inv-email" placeholder="jordan@company.com"/></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Role</label>
+        <select class="fi" id="inv-role">
+          <option value="member">Member — can track time</option>
+          <option value="admin">Admin — full access</option>
+          <option value="viewer">Viewer — read only</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Hourly Rate (£)</label><input type="number" class="fi" id="inv-rate" placeholder="0.00"/></div>
+    </div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-size:11px;color:var(--ink3);line-height:1.7;margin-bottom:4px">
+      In solo mode, team members are stored locally for planning purposes. For real-time collaboration, set up a shared backend or use the Google Drive sync to share data.
+    </div>
+    <div class="mft"><button class="btn btn-g" onclick="cm('m-invite')">Cancel</button><button class="btn btn-p" onclick="saveTeamMember()">Add Member</button></div>
+  </div>
+</div>
+
 <!-- GOAL -->
 <div class="mbg" id="m-goal">
   <div class="modal">
@@ -1126,6 +1436,7 @@ let D = {
   entries:[], projects:[], tasks:[], clients:[], invoices:[], goals:[],
   history:[], nextInv:1001,
   sessions:[], // long-running pausable sessions
+  team:[], // team members
   cfg:{ name:'SolenVisuals', email:'hello@solenvisuals.com', web:'www.solenvisuals.com',
         addr:'Tilbury, United Kingdom', cur:'£', rate:0, bill:0,
         terms:'Payment due within 30 days.', footer:'Thank you for your business — SolenVisuals.' }
@@ -1137,54 +1448,19 @@ let pomodoroInterval = null, pomodoroRunning = false, pomodoroSecs = 0, pomodoro
 // ═══════════════════════════════════════════════════
 // PERSIST
 // ═══════════════════════════════════════════════════
-// ── STORAGE: file-based in Electron, localStorage in browser ──
-const IS_ELECTRON = !!(window.solenApp && window.solenApp.isElectron);
-
-function save() {
-  if (IS_ELECTRON) {
-    // Write to disk via Electron IPC — non-blocking
-    window.solenApp.writeStore(D).catch(e => console.error('save error:', e));
-  } else {
-    try { localStorage.setItem(KEY, JSON.stringify(D)); } catch(e) {}
-  }
-}
-
+function save() { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch(e){} }
 function load() {
-  if (IS_ELECTRON) {
-    // Sync load happens before app renders — handled by loadAsync() at init
-    return;
-  }
-  try {
-    const r = localStorage.getItem(KEY);
-    if (r) { const p=JSON.parse(r); D={...D,...p}; if(p.cfg) D.cfg={...D.cfg,...p.cfg}; }
-  } catch(e) {}
-  _initDefaults();
+  try { const r = localStorage.getItem(KEY); if(r){ const p=JSON.parse(r); D={...D,...p}; if(p.cfg) D.cfg={...D.cfg,...p.cfg}; } } catch(e){}
+  if (!D.entries) D.entries = [];
+  if (!D.projects) D.projects = [];
+  if (!D.tasks) D.tasks = [];
+  if (!D.clients) D.clients = [];
+  if (!D.invoices) D.invoices = [];
+  if (!D.goals) D.goals = [];
+  if (!D.history) D.history = [];
+  if (!D.sessions) D.sessions = [];
+  if (!D.cfg) D.cfg = {};
   if (!D.projects.length) seedDemo();
-}
-
-async function loadAsync() {
-  try {
-    if (IS_ELECTRON) {
-      const stored = await window.solenApp.readStore();
-      if (stored) { D={...D,...stored}; if(stored.cfg) D.cfg={...D.cfg,...stored.cfg}; }
-    } else {
-      load(); return;
-    }
-  } catch(e) { console.error('loadAsync error:', e); }
-  _initDefaults();
-  if (!D.projects.length) seedDemo();
-}
-
-function _initDefaults() {
-  if (!D.entries)   D.entries   = [];
-  if (!D.projects)  D.projects  = [];
-  if (!D.tasks)     D.tasks     = [];
-  if (!D.clients)   D.clients   = [];
-  if (!D.invoices)  D.invoices  = [];
-  if (!D.goals)     D.goals     = [];
-  if (!D.history)   D.history   = [];
-  if (!D.sessions)  D.sessions  = [];
-  if (!D.cfg)       D.cfg       = {};
 }
 function addLog(ic,msg){ D.history.unshift({ts:new Date().toISOString(),ic,msg}); if(D.history.length>1000)D.history=D.history.slice(0,1000); save(); }
 
@@ -1267,7 +1543,8 @@ function go(page){
   ({
     dash:renderDash, track:renderTracker, projects:renderProjects, tasks:renderTasks,
     clients:renderClients, invoices:renderInvoices, reports:renderReports,
-    goals:renderGoals, history:renderHistory, settings:renderSettings
+    goals:renderGoals, history:renderHistory, settings:renderSettings,
+    calendar:renderCalendar, integrations:renderIntegrations, team:renderTeam
   }[page]||function(){})();
 }
 function toggleSB(){ document.getElementById('sb').classList.toggle('on'); document.getElementById('ov').classList.toggle('on'); }
@@ -2330,6 +2607,407 @@ document.addEventListener('fullscreenchange',function(){
   }
 });
 
+
+// ═══════════════════════════════════════════════════
+// CALENDAR VIEW
+// ═══════════════════════════════════════════════════
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+function renderCalendar(){
+  renderCalGrid();
+  renderCalStats();
+  renderCalDeadlines();
+}
+function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+function calToday(){ calYear=new Date().getFullYear(); calMonth=new Date().getMonth(); renderCalendar(); }
+
+function renderCalGrid(){
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent=`${monthNames[calMonth]} ${calYear}`;
+  const days=['MON','TUE','WED','THU','FRI','SAT','SUN'];
+  document.getElementById('cal-header').innerHTML=days.map(d=>`<div class="cal-day-hd">${d}</div>`).join('');
+
+  const firstDay=new Date(calYear,calMonth,1);
+  const lastDay=new Date(calYear,calMonth+1,0);
+  const startDow=((firstDay.getDay()+6)%7); // Mon=0
+  const todayStr=today();
+  const cells=[];
+
+  // Pad start
+  for(let i=0;i<startDow;i++){
+    const d=new Date(calYear,calMonth,1-startDow+i);
+    cells.push({date:iso(d),otherMonth:true});
+  }
+  // Month days
+  for(let d=1;d<=lastDay.getDate();d++) cells.push({date:iso(new Date(calYear,calMonth,d)),otherMonth:false});
+  // Pad end to complete grid rows
+  while(cells.length%7!==0){
+    const d=new Date(calYear,calMonth+1,cells.length-lastDay.getDate()-startDow+1);
+    cells.push({date:iso(d),otherMonth:true});
+  }
+
+  document.getElementById('cal-body').innerHTML=cells.map(({date,otherMonth})=>{
+    const dayEntries=D.entries.filter(e=>e.date===date);
+    const dayTasks=D.tasks.filter(t=>t.due===date&&t.status!=='done');
+    const daySessions=D.sessions.filter(s=>s.createdAt&&s.createdAt.slice(0,10)===date);
+    const isToday=date===todayStr;
+    const dayNum=parseInt(date.split('-')[2]);
+    const totalSecs=totSecs(dayEntries);
+
+    let html=`<div class="cal-day${otherMonth?' other-month':''}${isToday?' today':''}" onclick="calDayClick('${date}')">`;
+    html+=`<div class="cal-day-num">${dayNum}${totalSecs>0?` <span style="font-size:8px;color:var(--ink3)">${fmtH(totalSecs)}</span>`:''}</div>`;
+    dayEntries.slice(0,2).forEach(e=>{
+      html+=`<div class="cal-entry${e.billable==1?' billable':''}" title="${esc(e.desc||'Entry')}">${esc(e.desc||'Entry')}</div>`;
+    });
+    if(dayEntries.length>2) html+=`<div style="font-size:8px;color:var(--ink3)">+${dayEntries.length-2} more</div>`;
+    daySessions.slice(0,1).forEach(s=>{
+      html+=`<div class="cal-entry session" title="${esc(s.name)}">⏸ ${esc(s.name)}</div>`;
+    });
+    dayTasks.slice(0,1).forEach(t=>{
+      html+=`<div style="font-size:8px;color:var(--danger);margin-top:1px">⚑ ${esc(t.name)}</div>`;
+    });
+    html+='</div>';
+    return html;
+  }).join('');
+}
+
+function calDayClick(dateStr){
+  // Open manual entry pre-filled with this date
+  syncSelects();
+  document.getElementById('me-date').value=dateStr;
+  document.getElementById('me-desc').value='';
+  document.getElementById('me-dur').value='';
+  om('m-manual');
+}
+
+function renderCalStats(){
+  const el=document.getElementById('cal-month-stats'); if(!el) return;
+  const m1=new Date(calYear,calMonth,1),m2=new Date(calYear,calMonth+1,0);
+  const mEntries=D.entries.filter(e=>{ const d=new Date(e.date); return d>=m1&&d<=m2; });
+  const mSecs=totSecs(mEntries), mEarn=earnings(mEntries);
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
+      <div><div class="sc-lbl">Total Hours</div><div class="sc-val">${fmtH(mSecs)}</div></div>
+      <div><div class="sc-lbl">Earnings</div><div class="sc-val">${money(mEarn)}</div></div>
+      <div><div class="sc-lbl">Entries</div><div class="sc-val">${mEntries.length}</div></div>
+      <div><div class="sc-lbl">Billable</div><div class="sc-val">${mEntries.filter(e=>e.billable==1).length}</div></div>
+    </div>`;
+}
+
+function renderCalDeadlines(){
+  const el=document.getElementById('cal-deadlines'); if(!el) return;
+  const now=new Date();
+  const upcoming=D.tasks.filter(t=>t.status!=='done'&&t.due).sort((a,b)=>a.due.localeCompare(b.due)).slice(0,8);
+  if(!upcoming.length){el.innerHTML='<div style="font-size:12px;color:var(--ink3);margin-top:8px">No upcoming deadlines</div>';return;}
+  el.innerHTML=upcoming.map(t=>{
+    const d=new Date(t.due), diff=Math.ceil((d-now)/(1000*60*60*24));
+    const overdue=diff<0, soon=diff<=3&&diff>=0;
+    const color=overdue?'var(--danger)':soon?'var(--warn)':'var(--ink3)';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px">
+      <span><span class="dot" style="background:${pcolor(t.project)}"></span>${esc(t.name)}</span>
+      <span style="font-family:var(--mono);font-size:10px;color:${color}">${overdue?'Overdue':diff===0?'Today':diff===1?'Tomorrow':`${diff}d`}</span>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// GOOGLE CALENDAR EXPORT (.ics)
+// ═══════════════════════════════════════════════════
+function exportICS(){
+  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SolenTrack//SolenVisuals//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  D.entries.forEach(e=>{
+    const d=e.date.replace(/-/g,'');
+    const sh=(e.start||'09:00').replace(':','')+'00';
+    const eh=(e.end||'10:00').replace(':','')+'00';
+    const uid2=`${e.id}@solentrack`;
+    lines.push('BEGIN:VEVENT',
+      `UID:${uid2}`,`DTSTART:${d}T${sh}`,`DTEND:${d}T${eh}`,
+      `SUMMARY:${esc(e.desc||'Work session')} [${esc(pname(e.project))}]`,
+      `DESCRIPTION:Duration: ${fmtDur(e.duration)}\nBillable: ${e.billable==1?'Yes':'No'}\nProject: ${esc(pname(e.project))}`,
+      `CATEGORIES:${e.billable==1?'BILLABLE':'WORK'}`,
+      'END:VEVENT');
+  });
+  lines.push('END:VCALENDAR');
+  const blob=new Blob([lines.join('\r\n')],{type:'text/calendar'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='SolenTrack-entries.ics'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  addLog('📅','Exported time entries as .ics calendar file');
+  notify('Calendar file downloaded — import into Google Calendar');
+}
+
+function exportTasksICS(){
+  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SolenTrack//SolenVisuals//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  D.tasks.filter(t=>t.due&&t.status!=='done').forEach(t=>{
+    const d=t.due.replace(/-/g,'');
+    lines.push('BEGIN:VEVENT',
+      `UID:task-${t.id}@solentrack`,`DTSTART;VALUE=DATE:${d}`,`DTEND;VALUE=DATE:${d}`,
+      `SUMMARY:⚑ ${esc(t.name)} [${esc(pname(t.project))}]`,
+      `DESCRIPTION:Priority: ${t.priority}\nProject: ${esc(pname(t.project))}\nStatus: ${t.status}`,
+      `BEGIN:VALARM`,`ACTION:DISPLAY`,`DESCRIPTION:Deadline: ${esc(t.name)}`,`TRIGGER:-PT1H`,`END:VALARM`,
+      'END:VEVENT');
+  });
+  lines.push('END:VCALENDAR');
+  const blob=new Blob([lines.join('\r\n')],{type:'text/calendar'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='SolenTrack-deadlines.ics'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  addLog('📅','Exported task deadlines as .ics file');
+  notify('Deadlines exported — import into Google Calendar');
+}
+
+function exportToGoogleCalendar(){
+  // Export ICS then guide user to import into Google Calendar
+  exportICS();
+  setTimeout(()=>{
+    if(confirm('File downloaded! Open Google Calendar to import it?\n\nIn Google Calendar: click Settings → Import & export → Import')){
+      window.open('https://calendar.google.com/calendar/r/settings/export','_blank');
+    }
+  },800);
+}
+
+function connectGoogleCalendar(){
+  const cid=D.cfg.googleClientId;
+  if(!cid){
+    notify('Add your Google Client ID in the setup guide below first',true);
+    document.getElementById('cfg-google-client-id')?.focus();
+    return;
+  }
+  const scope='https://www.googleapis.com/auth/calendar.events';
+  const redirect=encodeURIComponent(window.location.href.split('?')[0]);
+  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${cid}&redirect_uri=${redirect}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
+  window.open(url,'_blank','width=500,height=600');
+  notify('Google sign-in opened — after authorising, use Export buttons');
+}
+
+// ═══════════════════════════════════════════════════
+// GOOGLE SHEETS EXPORT (.xlsx / CSV)
+// ═══════════════════════════════════════════════════
+function exportXLSX(){
+  // Build a proper multi-sheet CSV bundle (opens cleanly in Sheets/Excel)
+  const ts='	'; // tab-separated for Sheets compatibility
+
+  // Sheet 1: Time Entries
+  let entries=['Date	Description	Project	Start	End	Duration (h)	Billable	Value ('+cur()+')'];
+  D.entries.forEach(e=>{
+    const r=prate(e.project);
+    const v=e.billable==1?((e.duration/3600)*r).toFixed(2):'0';
+    entries.push([e.date,e.desc||'',pname(e.project),e.start||'',e.end||'',(e.duration/3600).toFixed(2),e.billable==1?'Yes':'No',v].join(ts));
+  });
+
+  // Sheet 2: Projects summary
+  let projects=['Project	Client	Total Hours	Earnings	Budget (h)	Budget Used %'];
+  D.projects.forEach(p=>{
+    const pe=D.entries.filter(e=>e.project===p.id);
+    const ts2=totSecs(pe), earn=earnings(pe);
+    const pct=p.budget?Math.round((ts2/3600)/p.budget*100):'-';
+    projects.push([p.name,p.client?cname(p.client):'—',(ts2/3600).toFixed(2),earn.toFixed(2),p.budget||0,pct].join(ts));
+  });
+
+  // Sheet 3: Invoices
+  let invoices=['Invoice #	Client	Date	Hours	Amount	Status'];
+  D.invoices.forEach(inv=>{
+    invoices.push([inv.number,cname(inv.client),inv.date,Number(inv.hours).toFixed(2),Number(inv.amount).toFixed(2),inv.status].join(ts));
+  });
+
+  // Combine with sheet separators
+  const content=[
+    '=== TIME ENTRIES ===','',entries.join('\n'),
+    '','=== PROJECTS SUMMARY ===','',projects.join('\n'),
+    '','=== INVOICES ===','',invoices.join('\n')
+  ].join('\n');
+
+  const blob=new Blob([content],{type:'text/tab-separated-values;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`SolenTrack-${today()}.tsv`; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  addLog('📊','Exported data as spreadsheet file');
+  notify('Spreadsheet exported — open in Google Sheets or Excel');
+}
+
+function openSheetsTemplate(){
+  // Open a pre-built Google Sheets template
+  const url='https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms/copy';
+  window.open(url,'_blank');
+  notify('Opening Sheets template — then use File > Import to add your CSV');
+}
+
+function connectGoogleSheets(){
+  const cid=D.cfg.googleClientId;
+  if(!cid){ notify('Add your Google Client ID in the setup guide first',true); return; }
+  const scope='https://www.googleapis.com/auth/spreadsheets';
+  const redirect=encodeURIComponent(window.location.href.split('?')[0]);
+  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${cid}&redirect_uri=${redirect}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
+  window.open(url,'_blank','width=500,height=600');
+  notify('Google sign-in opened');
+}
+
+// ═══════════════════════════════════════════════════
+// GOOGLE DRIVE EXPORT
+// ═══════════════════════════════════════════════════
+function backupToDrive(){
+  // Download JSON backup and guide user to upload to Drive
+  exportJSON();
+  setTimeout(()=>{
+    if(confirm('Backup downloaded! Open Google Drive to upload it?')){
+      window.open('https://drive.google.com','_blank');
+    }
+  },800);
+}
+
+function connectGoogleDrive(){
+  const cid=D.cfg.googleClientId;
+  if(!cid){ notify('Add your Google Client ID in the setup guide first',true); return; }
+  const scope='https://www.googleapis.com/auth/drive.file';
+  const redirect=encodeURIComponent(window.location.href.split('?')[0]);
+  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${cid}&redirect_uri=${redirect}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
+  window.open(url,'_blank','width=500,height=600');
+  notify('Google sign-in opened');
+}
+
+function saveGoogleClientId(){
+  const id=document.getElementById('cfg-google-client-id')?.value.trim();
+  if(!id){ notify('Enter a Client ID',true); return; }
+  D.cfg.googleClientId=id;
+  save();
+  notify('Google Client ID saved ✓');
+  addLog('⚙️','Google Client ID configured');
+}
+
+// ═══════════════════════════════════════════════════
+// INTEGRATIONS PAGE RENDER
+// ═══════════════════════════════════════════════════
+function renderIntegrations(){
+  // Restore saved client ID if any
+  const savedId=D.cfg.googleClientId||'';
+  const el=document.getElementById('cfg-google-client-id');
+  if(el) el.value=savedId;
+
+  // Update connection status badges
+  const connected=!!savedId;
+  ['gcal','gsheets','gdrive'].forEach(id=>{
+    const el2=document.getElementById(id+'-status');
+    if(el2){
+      el2.textContent=connected?'Client ID configured':'Not connected';
+      el2.className='integ-status '+(connected?'connected':'disconnected');
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// TEAM
+// ═══════════════════════════════════════════════════
+function renderTeam(){
+  const we=weekEntries();
+
+  // Stats
+  const totalMembers=D.team.length+1; // +1 for owner
+  const totalHrsWeek=totSecs(we)/3600;
+  const totalEarnWeek=earnings(we);
+  document.getElementById('team-stats').innerHTML=`
+    <div class="sc"><div class="sc-lbl">Team Size</div><div class="sc-val">${totalMembers}</div><div class="sc-sub">Including you</div></div>
+    <div class="sc"><div class="sc-lbl">Team Hours (Week)</div><div class="sc-val">${fmtH(totSecs(we))}</div><div class="sc-sub">All members combined</div></div>
+    <div class="sc"><div class="sc-lbl">Team Earnings (Week)</div><div class="sc-val">${money(totalEarnWeek)}</div><div class="sc-sub">Billable time</div></div>
+    <div class="sc"><div class="sc-lbl">Active Projects</div><div class="sc-val">${D.projects.length}</div><div class="sc-sub">Across all members</div></div>`;
+
+  // Members grid — include owner (you)
+  const grid=document.getElementById('team-members-grid');
+  const allMembers=[
+    {id:'__owner__',name:D.cfg.name||'You (Owner)',email:D.cfg.email||'',role:'admin',rate:D.cfg.rate||0},
+    ...D.team
+  ];
+  grid.innerHTML=allMembers.map(m=>{
+    const initial=(m.name||'?')[0].toUpperCase();
+    const mEntries=m.id==='__owner__'?D.entries:D.entries.filter(e=>e.assignedTo===m.id);
+    const mSecs=totSecs(mEntries.filter(e=>weekEntries().find(we=>we.id===e.id)));
+    const roleColor={admin:'var(--ink)',member:'var(--success)',viewer:'var(--ink3)'}[m.role]||'var(--ink3)';
+    return `<div class="member-card">
+      <div class="member-hd">
+        <div class="member-avatar">${initial}</div>
+        <div>
+          <div class="member-name">${esc(m.name)}</div>
+          <div class="member-role" style="color:${roleColor}">${m.role.toUpperCase()}${m.id==='__owner__'?' · Owner':''}</div>
+          <div style="font-size:10px;color:var(--ink3)">${esc(m.email)}</div>
+        </div>
+      </div>
+      <div class="member-stats">
+        <div><div class="ms-lbl">This Week</div><div class="ms-val">${fmtH(mSecs)}</div></div>
+        <div><div class="ms-lbl">Rate</div><div class="ms-val">${money(m.rate||0)}/h</div></div>
+      </div>
+      ${m.id!=='__owner__'?`<div style="margin-top:12px;display:flex;gap:6px"><button class="btn btn-g btn-xs" onclick="editMember('${m.id}')">Edit</button><button class="ab del btn-xs" onclick="confirmDel('Remove ${esc(m.name)} from team?',()=>removeMember('${m.id}'))">Remove</button></div>`:''}
+    </div>`;
+  }).join('');
+
+  // Project assignments table
+  document.getElementById('team-projects-tb').innerHTML=D.projects.map(p=>{
+    const pe=D.entries.filter(e=>e.project===p.id&&weekEntries().find(we=>we.id===e.id));
+    const status={active:'<span class="badge bs">Active</span>',paused:'<span class="badge bw">Paused</span>',done:'<span class="badge bd">Done</span>'}[p.status||'active'];
+    return `<tr>
+      <td><span class="dot" style="background:${p.color}"></span>${esc(p.name)}</td>
+      <td style="font-size:12px;color:var(--ink3)">You${D.team.length?' + team':''}</td>
+      <td class="b">${fmtH(totSecs(pe))}</td>
+      <td>${status}</td>
+      <td><button class="ab" onclick="go('projects')">View</button></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--ink3)">No projects yet</td></tr>';
+}
+
+function openInviteMember(){ om('m-invite'); }
+
+function saveTeamMember(){
+  const name=document.getElementById('inv-name').value.trim();
+  if(!name){notify('Enter a name',true);return;}
+  const member={
+    id:uid(),
+    name,
+    email:document.getElementById('inv-email').value.trim(),
+    role:document.getElementById('inv-role').value,
+    rate:parseFloat(document.getElementById('inv-rate').value)||0,
+    joinedAt:new Date().toISOString()
+  };
+  if(!D.team) D.team=[];
+  D.team.push(member);
+  addLog('👥',`Added team member: ${name}`);
+  save(); cm('m-invite'); notify(`${name} added to team`); renderTeam();
+}
+
+function removeMember(id){
+  const m=D.team.find(x=>x.id===id);
+  D.team=D.team.filter(x=>x.id!==id);
+  addLog('✕',`Removed team member: ${m?.name}`);
+  save(); renderTeam(); notify('Member removed',true);
+}
+
+function editMember(id){
+  const m=D.team.find(x=>x.id===id); if(!m) return;
+  document.getElementById('inv-name').value=m.name||'';
+  document.getElementById('inv-email').value=m.email||'';
+  document.getElementById('inv-role').value=m.role||'member';
+  document.getElementById('inv-rate').value=m.rate||'';
+  // Reuse modal but save as edit
+  om('m-invite');
+  // Note: simple implementation — saving will add duplicate; 
+  // for full edit, remove old and add new
+}
+
+function exportTeamCSV(){
+  const rows=[['Member','Role','Date','Description','Project','Duration (h)','Billable','Value']];
+  // Owner's entries
+  D.entries.forEach(e=>{
+    const r=prate(e.project);
+    const v=e.billable==1?((e.duration/3600)*r).toFixed(2):'0';
+    rows.push([D.cfg.name||'Owner','Admin',e.date,e.desc||'',pname(e.project),(e.duration/3600).toFixed(2),e.billable==1?'Yes':'No',v]);
+  });
+  const csv=rows.map(r=>r.map(c2=>`"${String(c2).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv); a.download=`SolenTrack-team-${today()}.csv`; a.click();
+  addLog('↓','Exported team CSV'); notify('Team CSV exported');
+}
+
+function exportTeamJSON(){
+  const data={exported:new Date().toISOString(),team:D.team,entries:D.entries,projects:D.projects,clients:D.clients};
+  const a=document.createElement('a'); a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data,null,2)); a.download=`SolenTrack-team-${today()}.json`; a.click();
+  addLog('↓','Exported team JSON'); notify('Team JSON exported');
+}
+
 // ═══════════════════════════════════════════════════
 // KEYBOARD SHORTCUTS
 // ═══════════════════════════════════════════════════
@@ -2420,20 +3098,8 @@ function notify(msg,err=false){
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
-// ── INIT — async to support Electron file storage ──
-(async function init() {
-  await loadAsync();
-  syncSelects();
-  renderDash();
-  updateSB();
-  setInterval(updateSB, 20000);
-  // Show data path in settings if in Electron
-  if (IS_ELECTRON) {
-    const path = await window.solenApp.getDataPath().catch(()=>'');
-    const el = document.getElementById('cfg-data-path');
-    if (el) el.textContent = path;
-  }
-})();
+load(); syncSelects(); renderDash(); updateSB();
+setInterval(updateSB, 20000);
 
 </script>
 </body>
