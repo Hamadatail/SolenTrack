@@ -890,6 +890,7 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
     <div class="setting-card">
       <div class="setting-tt">Data Management</div>
       <div class="setting-sub">Export or reset your workspace data</div>
+      <div id="cfg-data-path" style="font-family:var(--mono);font-size:10px;color:var(--ink3);margin-bottom:12px;word-break:break-all;padding:6px 8px;background:var(--bg);border-radius:4px;border:1px solid var(--border)"></div>
       <div class="data-actions">
         <button class="btn btn-g btn-sm" onclick="exportCSV()">↓ Export CSV</button>
         <button class="btn btn-g btn-sm" onclick="exportJSON()">↓ Export JSON Backup</button>
@@ -1136,19 +1137,54 @@ let pomodoroInterval = null, pomodoroRunning = false, pomodoroSecs = 0, pomodoro
 // ═══════════════════════════════════════════════════
 // PERSIST
 // ═══════════════════════════════════════════════════
-function save() { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch(e){} }
+// ── STORAGE: file-based in Electron, localStorage in browser ──
+const IS_ELECTRON = !!(window.solenApp && window.solenApp.isElectron);
+
+function save() {
+  if (IS_ELECTRON) {
+    // Write to disk via Electron IPC — non-blocking
+    window.solenApp.writeStore(D).catch(e => console.error('save error:', e));
+  } else {
+    try { localStorage.setItem(KEY, JSON.stringify(D)); } catch(e) {}
+  }
+}
+
 function load() {
-  try { const r = localStorage.getItem(KEY); if(r){ const p=JSON.parse(r); D={...D,...p}; if(p.cfg) D.cfg={...D.cfg,...p.cfg}; } } catch(e){}
-  if (!D.entries) D.entries = [];
-  if (!D.projects) D.projects = [];
-  if (!D.tasks) D.tasks = [];
-  if (!D.clients) D.clients = [];
-  if (!D.invoices) D.invoices = [];
-  if (!D.goals) D.goals = [];
-  if (!D.history) D.history = [];
-  if (!D.sessions) D.sessions = [];
-  if (!D.cfg) D.cfg = {};
+  if (IS_ELECTRON) {
+    // Sync load happens before app renders — handled by loadAsync() at init
+    return;
+  }
+  try {
+    const r = localStorage.getItem(KEY);
+    if (r) { const p=JSON.parse(r); D={...D,...p}; if(p.cfg) D.cfg={...D.cfg,...p.cfg}; }
+  } catch(e) {}
+  _initDefaults();
   if (!D.projects.length) seedDemo();
+}
+
+async function loadAsync() {
+  try {
+    if (IS_ELECTRON) {
+      const stored = await window.solenApp.readStore();
+      if (stored) { D={...D,...stored}; if(stored.cfg) D.cfg={...D.cfg,...stored.cfg}; }
+    } else {
+      load(); return;
+    }
+  } catch(e) { console.error('loadAsync error:', e); }
+  _initDefaults();
+  if (!D.projects.length) seedDemo();
+}
+
+function _initDefaults() {
+  if (!D.entries)   D.entries   = [];
+  if (!D.projects)  D.projects  = [];
+  if (!D.tasks)     D.tasks     = [];
+  if (!D.clients)   D.clients   = [];
+  if (!D.invoices)  D.invoices  = [];
+  if (!D.goals)     D.goals     = [];
+  if (!D.history)   D.history   = [];
+  if (!D.sessions)  D.sessions  = [];
+  if (!D.cfg)       D.cfg       = {};
 }
 function addLog(ic,msg){ D.history.unshift({ts:new Date().toISOString(),ic,msg}); if(D.history.length>1000)D.history=D.history.slice(0,1000); save(); }
 
@@ -2384,8 +2420,20 @@ function notify(msg,err=false){
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
-load(); syncSelects(); renderDash(); updateSB();
-setInterval(updateSB, 20000);
+// ── INIT — async to support Electron file storage ──
+(async function init() {
+  await loadAsync();
+  syncSelects();
+  renderDash();
+  updateSB();
+  setInterval(updateSB, 20000);
+  // Show data path in settings if in Electron
+  if (IS_ELECTRON) {
+    const path = await window.solenApp.getDataPath().catch(()=>'');
+    const el = document.getElementById('cfg-data-path');
+    if (el) el.textContent = path;
+  }
+})();
 
 </script>
 </body>
