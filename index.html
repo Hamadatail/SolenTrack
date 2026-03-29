@@ -17,8 +17,8 @@
   --sh:0 1px 2px rgba(0,0,0,.05),0 2px 8px rgba(0,0,0,.04);
   --sh2:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.06);
 }
-html,body{height:100%;}html{font-size:14px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);display:flex;height:100%;overflow-x:hidden;}
+html,body{min-height:100%;}html{font-size:14px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);display:flex;min-height:100%;overflow-x:hidden;}
 
 /* ── SIDEBAR ─────────────────────────────── */
 .sb{width:var(--sb);min-height:100vh;background:var(--ink);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;transition:transform .25s cubic-bezier(.4,0,.2,1);overflow-y:auto;}
@@ -51,8 +51,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);display:flex;
 .ov.on{display:block;}
 
 /* ── MAIN ────────────────────────────────── */
-main{margin-left:var(--sb);flex:1;min-width:0;display:flex;flex-direction:column;align-items:stretch;min-height:100vh;}
-.pg{display:none;padding:28px 40px 60px;width:100%;max-width:1600px;animation:fadeIn .18s ease;}
+main{margin-left:var(--sb);flex:1;min-width:0;display:flex;flex-direction:column;align-items:stretch;min-height:100vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.pg{display:none;padding:28px 40px 60px;width:100%;max-width:1600px;animation:fadeIn .18s ease;overflow-x:hidden;}
 .pg.on{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
@@ -176,7 +176,7 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
 
 /* ── CHARTS ──────────────────────────────── */
 .crow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-.ccard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);}
+.ccard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);overflow:hidden;}
 .ctt{font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:14px;}
 .barchart{display:flex;align-items:flex-end;gap:5px;height:72px;}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
@@ -318,6 +318,11 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
   .tpl-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));}
 }
 
+/* ── Report/dash chart grids on tablet ── */
+@media(max-width:768px){
+  [style*="grid-template-columns:2fr 1fr"]{grid-template-columns:1fr!important;}
+  [style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:1fr 1fr!important;}
+}
 /* ── Tablet portrait ── */
 @media(max-width:768px){
   .stats{grid-template-columns:repeat(2,1fr);}
@@ -880,7 +885,7 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
 
 /* ── CHARTS ──────────────────────────────── */
 .chart-wrap{position:relative;width:100%;overflow:hidden;}
-.chart-svg{width:100%;overflow:visible;}
+.chart-svg{width:100%;overflow:hidden;display:block;}
 .chart-bar{transition:opacity .12s;}
 .chart-bar:hover{opacity:.75;cursor:pointer;}
 .chart-tooltip{position:absolute;background:var(--ink);color:#fff;padding:6px 10px;border-radius:6px;font-size:11px;font-family:var(--mono);pointer-events:none;white-space:nowrap;z-index:100;opacity:0;transition:opacity .12s;}
@@ -938,6 +943,8 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
 /* ── RESPONSIVE IMPROVEMENTS ──────────────── */
 .modal-footer-btns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
 </style>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -1014,7 +1021,8 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
         solenvisuals.com
       </a>
     </div>
-  </div>
+    <div style="padding:8px 14px 14px;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.1em" id="app-version-label">v2.0.0</div>
+</div>
 </nav>
 
 <div class="notif" id="notif"></div>
@@ -1095,18 +1103,18 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
     <div class="ph-acts" style="flex-wrap:wrap"><button class="btn btn-g btn-sm" onclick="quickAddTask()">+ Task</button><button class="btn btn-g btn-sm" onclick="quickAddExpense()">+ Expense</button><button class="btn btn-p" onclick="quickStartTimer()">▶ Start Timer</button></div>
   </div>
   <div class="stats" id="dash-stats"></div>
-  <div class="crow">
-    <div class="ccard" style="flex:1">
-      <div class="ctt">This Week — hrs/day</div>
-      <div id="week-chart" style="height:80px;margin-top:8px"></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
+    <div class="ccard">
+      <div class="ctt">This Week</div>
+      <div id="week-chart" style="height:90px;margin-top:8px;overflow:hidden"></div>
     </div>
-    <div class="ccard" style="flex:1">
+    <div class="ccard">
       <div class="ctt">Time by Project</div>
       <div class="dnut"><canvas id="donut" width="96" height="96"></canvas><div class="dleg" id="dleg"></div></div>
     </div>
-    <div class="ccard" style="flex:1">
-      <div class="ctt">Earnings — Last 8 Weeks</div>
-      <div id="earn-trend" style="height:80px;margin-top:8px"></div>
+    <div class="ccard">
+      <div class="ctt">Earnings Trend</div>
+      <div id="earn-trend" style="height:90px;margin-top:8px;overflow:hidden"></div>
     </div>
   </div>
   <div class="card">
@@ -1312,24 +1320,24 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
     </div>
   </div>
   <div class="stats" id="rep-stats"></div>
-  <div class="crow">
-    <div class="ccard" style="flex:2">
-      <div class="ctt">Monthly Hours &amp; Earnings (6 months)</div>
-      <div id="month-chart" style="height:120px;position:relative;margin-top:8px"></div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:14px">
+    <div class="ccard">
+      <div class="ctt">Monthly Hours &amp; Earnings</div>
+      <div id="month-chart" style="height:140px;margin-top:10px;overflow:hidden"></div>
     </div>
-    <div class="ccard" style="flex:1">
+    <div class="ccard">
       <div class="ctt">Billable Split</div>
-      <div id="bill-break" style="margin-top:6px"></div>
+      <div id="bill-break" style="margin-top:8px"></div>
     </div>
   </div>
-  <div class="crow" style="margin-top:14px">
-    <div class="ccard" style="flex:1">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+    <div class="ccard">
       <div class="ctt">Revenue by Project</div>
-      <div id="rep-proj-chart" style="height:140px;margin-top:8px"></div>
+      <div id="rep-proj-chart" style="height:150px;margin-top:10px;overflow:hidden"></div>
     </div>
-    <div class="ccard" style="flex:1">
+    <div class="ccard">
       <div class="ctt">Daily Activity — Last 30 Days</div>
-      <div id="rep-heatmap" style="margin-top:8px"></div>
+      <div id="rep-heatmap" style="margin-top:10px"></div>
     </div>
   </div>
   <div class="card">
@@ -1341,90 +1349,239 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
 <!-- GOALS -->
 <div class="pg" id="pg-goals">
   <div class="ph">
-    <div><h1>Goals</h1><p>Set targets and track your weekly streaks</p></div>
-    <div class="ph-acts"><button class="btn btn-p" onclick="openGoalModal()">+ New Goal</button></div>
+    <div><h1>Goals</h1><p>Set targets and track your progress</p></div>
+    <div class="ph-acts">
+      <button class="btn btn-p" onclick="openGoalModal()">+ New Goal</button>
+    </div>
   </div>
-  <div id="goals-wrap" style="display:grid;gap:11px;"></div>
+
+  <!-- Quick stats -->
+  <div class="stats" id="goals-stats" style="margin-bottom:14px"></div>
+
+  <!-- Streak bar -->
+  <div class="card" style="margin-bottom:14px;padding:16px 20px" id="goals-streak-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:600">This Week</div>
+      <div style="font-size:11px;color:var(--ink3)" id="goals-week-label"></div>
+    </div>
+    <div id="goals-week-bars" style="display:flex;gap:6px;align-items:flex-end;height:48px"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px" id="goals-week-days"></div>
+  </div>
+
+  <div id="goals-wrap" style="display:grid;gap:12px"></div>
 </div>
 
 <!-- HISTORY -->
+<!-- HISTORY -->
 <div class="pg" id="pg-history">
   <div class="ph">
-    <div><h1>History Log</h1><p>Full audit trail — saved permanently until you delete</p></div>
+    <div><h1>History Log</h1><p>Every action, permanently recorded</p></div>
     <div class="ph-acts">
-      <input class="cf-inp" id="hist-search" placeholder="Search history…" oninput="renderHistory()" style="min-width:180px"/>
+      <input class="cf-inp" id="hist-search" placeholder="🔍 Search history…" oninput="renderHistory()" style="min-width:160px"/>
       <select class="cf-inp" id="hist-filter" onchange="renderHistory()" style="font-size:12px">
         <option value="">All events</option>
-        <option value="timer">Timer</option>
-        <option value="project">Projects</option>
-        <option value="invoice">Invoices</option>
-        <option value="client">Clients</option>
-        <option value="task">Tasks</option>
-        <option value="export">Exports</option>
+        <option value="timer">⏱ Timer</option>
+        <option value="project">◻ Projects</option>
+        <option value="invoice">🧾 Invoices</option>
+        <option value="client">👤 Clients</option>
+        <option value="task">✓ Tasks</option>
+        <option value="expense">💸 Expenses</option>
+        <option value="export">↓ Exports</option>
       </select>
       <button class="btn btn-g btn-sm" onclick="exportHistoryCSV()">↓ Export</button>
       <button class="btn btn-d btn-sm" onclick="confirmDel('Clear ALL history permanently?',clearHistory)" style="color:var(--danger)">Clear All</button>
     </div>
   </div>
-  <div class="card">
-    <div class="card-hd">
-      <span class="card-tt" id="hist-ct">0 events</span>
-      <div class="card-ft" style="font-size:11px;color:var(--ink3)" id="hist-foot"></div>
+
+  <!-- Stats bar -->
+  <div class="stats" id="hist-stats" style="margin-bottom:14px"></div>
+
+  <div class="card" style="padding:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:600" id="hist-ct">0 events</div>
+      <div style="font-size:11px;color:var(--ink3)" id="hist-foot"></div>
     </div>
-    <div id="hist-list" style="max-height:65vh;overflow-y:auto;padding:0 4px"></div>
+    <div id="hist-list" style="max-height:65vh;overflow-y:auto;padding:0"></div>
   </div>
 </div>
 
 <!-- SETTINGS -->
+<!-- SETTINGS -->
 <div class="pg" id="pg-settings">
-  <div class="ph"><div><h1>Settings</h1><p>Customise your workspace</p></div></div>
-  <div class="settings-grid">
-    <div class="setting-card">
-      <div class="setting-tt">Your Details</div>
-      <div class="setting-sub">Used on invoice headers</div>
-      <div class="fg"><label class="fl">Studio / Business Name</label><input class="fi" id="cfg-name" placeholder="SolenVisuals"/></div>
-      <div class="fg"><label class="fl">Email</label><input class="fi" id="cfg-email" placeholder="hello@solenvisuals.com"/></div>
-      <div class="fg"><label class="fl">Website</label><input class="fi" id="cfg-web" placeholder="www.solenvisuals.com"/></div>
-      <div class="fg"><label class="fl">Address</label><input class="fi" id="cfg-addr" placeholder="London, United Kingdom"/></div>
-      <div class="fg"><label class="fl">Currency Symbol</label><input class="fi" id="cfg-cur" placeholder="£" style="width:60px"/></div>
-      <button class="btn btn-p btn-sm" onclick="saveSettings()">Save Details</button>
+  <div class="ph">
+    <div><h1>Settings</h1><p>Customise SolenTrack to your workflow</p></div>
+    <div class="ph-acts">
+      <button class="btn btn-p" onclick="saveSettings()">💾 Save All</button>
     </div>
+  </div>
+
+  <div class="settings-grid">
+
+    <!-- Studio Details -->
     <div class="setting-card">
-      <div class="setting-tt">Data Management</div>
-      <div class="setting-sub">Export or reset your workspace data</div>
-      <div class="data-actions">
-        <button class="btn btn-g btn-sm" onclick="exportCSV()">↓ Export CSV</button>
-        <button class="btn btn-g btn-sm" onclick="exportJSON()">↓ Export JSON Backup</button>
-        <button class="btn btn-g btn-sm" onclick="importJSON()">↑ Import JSON</button>
-        <input type="file" id="import-file" accept=".json" style="display:none" onchange="doImport(event)"/>
+      <div class="setting-tt">🏢 Studio Details</div>
+      <div class="setting-sub">Appears on invoices, documents and client portal</div>
+      <div class="fg"><label class="fl">Studio / Business Name</label><input class="fi" id="cfg-name" placeholder="SolenVisuals"/></div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Email</label><input class="fi" id="cfg-email" placeholder="hello@solenvisuals.com"/></div>
+        <div class="fg"><label class="fl">Phone</label><input class="fi" id="cfg-phone" placeholder="+44 7700 000000"/></div>
+      </div>
+      <div class="fg"><label class="fl">Website</label><input class="fi" id="cfg-web" placeholder="www.solenvisuals.com"/></div>
+      <div class="fg"><label class="fl">Address</label><textarea class="fi" id="cfg-addr" rows="2" placeholder="London, United Kingdom" style="resize:none"></textarea></div>
+      <div class="fg"><label class="fl">VAT / Tax Number (optional)</label><input class="fi" id="cfg-vat" placeholder="GB 123 4567 89"/></div>
+      <div class="fg"><label class="fl">Company Registration (optional)</label><input class="fi" id="cfg-reg" placeholder="12345678"/></div>
+      <button class="btn btn-p btn-sm" onclick="saveSettings()" style="margin-top:4px">Save Details</button>
+    </div>
+
+    <!-- Billing & Rates -->
+    <div class="setting-card">
+      <div class="setting-tt">💰 Billing & Rates</div>
+      <div class="setting-sub">Default values applied when no project/client rate is set</div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Currency Symbol</label><input class="fi" id="cfg-cur" placeholder="£" style=""/></div>
+        <div class="fg"><label class="fl">Default Hourly Rate</label><input type="number" class="fi" id="cfg-rate" placeholder="75.00" step="0.50"/></div>
+      </div>
+      <div class="fg"><label class="fl">Default Billing</label>
+        <select class="fi" id="cfg-bill">
+          <option value="1">Billable by default</option>
+          <option value="0">Not billable by default</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Working Hours / Week</label><input type="number" class="fi" id="cfg-hours-week" placeholder="40" step="0.5"/></div>
+      <div class="fg"><label class="fl">Working Days / Week</label>
+        <select class="fi" id="cfg-work-days">
+          <option value="5">5 days (Mon–Fri)</option>
+          <option value="6">6 days (Mon–Sat)</option>
+          <option value="7">7 days</option>
+          <option value="4">4 days</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Financial Year Start</label>
+        <select class="fi" id="cfg-fy-start">
+          <option value="4">April (UK standard)</option>
+          <option value="1">January</option>
+          <option value="7">July</option>
+          <option value="10">October</option>
+        </select>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="saveSettings()" style="margin-top:4px">Save Rates</button>
+    </div>
+
+    <!-- Invoice Defaults -->
+    <div class="setting-card">
+      <div class="setting-tt">🧾 Invoice Defaults</div>
+      <div class="setting-sub">Pre-filled on every new invoice</div>
+      <div class="fg"><label class="fl">Payment Terms</label>
+        <select class="fi" id="cfg-payment-terms-preset" onchange="applyTermsPreset(this.value)">
+          <option value="">Custom…</option>
+          <option value="Payment due within 14 days of invoice date.">14 days</option>
+          <option value="Payment due within 30 days of invoice date.">30 days</option>
+          <option value="Payment due on receipt.">On receipt</option>
+          <option value="50% deposit required before work begins. Balance due on delivery.">50% deposit</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Payment Terms Text</label><textarea class="fi" id="cfg-terms" rows="2" placeholder="Payment due within 30 days of invoice date." style="resize:none"></textarea></div>
+      <div class="fg"><label class="fl">Invoice Notes / Footer</label><textarea class="fi" id="cfg-footer" rows="2" placeholder="Thank you for your business." style="resize:none"></textarea></div>
+      <div class="fg"><label class="fl">Default Tax / VAT %</label><input type="number" class="fi" id="cfg-tax-pct" placeholder="20" min="0" max="100" step="0.1"/></div>
+      <div class="fg"><label class="fl">Invoice Number Prefix</label><input class="fi" id="cfg-inv-prefix" placeholder="INV-"/></div>
+      <div class="fg"><label class="fl">Next Invoice Number</label><input type="number" class="fi" id="cfg-next-inv" placeholder="1001"/></div>
+      <button class="btn btn-p btn-sm" onclick="saveSettings()" style="margin-top:4px">Save Invoice Defaults</button>
+    </div>
+
+    <!-- Appearance -->
+    <div class="setting-card">
+      <div class="setting-tt">🎨 Appearance</div>
+      <div class="setting-sub">Personalise how SolenTrack looks</div>
+      <div class="fg"><label class="fl">Colour Theme</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px" id="theme-swatches">
+          <div class="theme-chip active" data-theme="default" onclick="applyTheme('default')" style="background:#0a0a0a;color:#fff;padding:7px 14px;border-radius:6px;font-size:11px;cursor:pointer;border:2px solid transparent">Dark</div>
+          <div class="theme-chip" data-theme="light" onclick="applyTheme('light')" style="background:#f8f8f6;color:#0a0a0a;padding:7px 14px;border-radius:6px;font-size:11px;cursor:pointer;border:2px solid #e0e0e0">Light</div>
+          <div class="theme-chip" data-theme="midnight" onclick="applyTheme('midnight')" style="background:#0d1117;color:#58a6ff;padding:7px 14px;border-radius:6px;font-size:11px;cursor:pointer;border:2px solid #21262d">Midnight</div>
+          <div class="theme-chip" data-theme="ink" onclick="applyTheme('ink')" style="background:#1a1a2e;color:#e94560;padding:7px 14px;border-radius:6px;font-size:11px;cursor:pointer;border:2px solid #16213e">Ink</div>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label class="fl">Sidebar Width</label>
+        <select class="fi" id="cfg-sb-width">
+          <option value="220">Compact (220px)</option>
+          <option value="240" selected>Normal (240px)</option>
+          <option value="260">Wide (260px)</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Default Start Page</label>
+        <select class="fi" id="cfg-start-page">
+          <option value="dash">Dashboard</option>
+          <option value="track">Time Tracker</option>
+          <option value="projects">Projects</option>
+          <option value="tasks">Tasks</option>
+        </select>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="saveSettings()" style="margin-top:4px">Save Appearance</button>
+    </div>
+
+    <!-- Notifications & Behaviour -->
+    <div class="setting-card">
+      <div class="setting-tt">🔔 Notifications & Behaviour</div>
+      <div class="setting-sub">Control how SolenTrack behaves</div>
+      <div class="fg">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border)">
+          <input type="checkbox" id="cfg-notify-idle" style="accent-color:var(--ink);width:16px;height:16px"/>
+          <div><div style="font-size:13px;font-weight:500">Idle reminder</div><div style="font-size:11px;color:var(--ink3)">Remind me if timer runs for over 4 hours</div></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border)">
+          <input type="checkbox" id="cfg-notify-invoice" checked style="accent-color:var(--ink);width:16px;height:16px"/>
+          <div><div style="font-size:13px;font-weight:500">Overdue invoice alerts</div><div style="font-size:11px;color:var(--ink3)">Show overdue invoices on dashboard</div></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border)">
+          <input type="checkbox" id="cfg-notify-deadline" checked style="accent-color:var(--ink);width:16px;height:16px"/>
+          <div><div style="font-size:13px;font-weight:500">Deadline warnings</div><div style="font-size:11px;color:var(--ink3)">Highlight projects due within 7 days</div></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 0">
+          <input type="checkbox" id="cfg-auto-stop" style="accent-color:var(--ink);width:16px;height:16px"/>
+          <div><div style="font-size:13px;font-weight:500">Auto-stop timer at midnight</div><div style="font-size:11px;color:var(--ink3)">Stop running timers at 00:00 automatically</div></div>
+        </label>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="saveSettings()" style="margin-top:8px">Save Preferences</button>
+    </div>
+
+    <!-- Data Management -->
+    <div class="setting-card">
+      <div class="setting-tt">📦 Data Management</div>
+      <div class="setting-sub">Backup, restore and manage your workspace</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-g btn-sm" onclick="exportJSON()" style="justify-content:flex-start;gap:8px">⬇ Download Full Backup</button>
+        <button class="btn btn-g btn-sm" onclick="importJSON()" style="justify-content:flex-start;gap:8px">⬆ Restore from Backup</button>
+        <button class="btn btn-g btn-sm" onclick="exportCSV()" style="justify-content:flex-start;gap:8px">⬇ Export as CSV</button>
+        <button class="btn btn-g btn-sm" onclick="exportHistoryCSV()" style="justify-content:flex-start;gap:8px">⬇ Export History Log</button>
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ink3);line-height:1.7">
+        Auto-saves to browser storage on every change.<br>
+        Download backups regularly to keep your data safe.
       </div>
       <div class="divider"></div>
-      <div class="setting-tt" style="color:var(--danger)">Danger Zone</div>
-      <div class="setting-sub">These actions cannot be undone</div>
-      <div class="data-actions">
-        <button class="btn btn-d btn-sm" onclick="resetData()">Reset All Data</button>
-      </div>
+      <div class="setting-tt" style="color:var(--danger);font-size:12px">⚠ Danger Zone</div>
+      <button class="btn btn-d btn-sm" onclick="confirmDel('Reset ALL data? This cannot be undone.',resetData)" style="width:100%;color:var(--danger);margin-top:8px">Reset All Data</button>
+      <input type="file" id="import-file-settings" accept=".json" style="display:none" onchange="doImport(event)"/>
     </div>
+
+    <!-- About -->
     <div class="setting-card">
-      <div class="setting-tt">Default Rates</div>
-      <div class="setting-sub">Applied when no project/client rate is set</div>
-      <div class="fg"><label class="fl">Default Hourly Rate</label><input type="number" class="fi" id="cfg-rate" placeholder="0.00"/></div>
-      <div class="fg"><label class="fl">Default Billable</label>
-        <select class="fi" id="cfg-bill"><option value="0">Not billable by default</option><option value="1">Billable by default</option></select>
+      <div class="setting-tt">ℹ About SolenTrack</div>
+      <div style="font-size:13px;color:var(--ink2);line-height:1.9;margin-bottom:12px">
+        <div style="font-size:22px;font-weight:700;font-family:var(--mono);margin-bottom:4px">SolenTrack</div>
+        <div style="font-size:11px;color:var(--ink3);font-family:var(--mono);letter-spacing:.1em">VERSION 2.0.0</div>
+        <div class="divider"></div>
+        Built for <b>SolenVisuals</b> — professional time management &amp; studio operations.<br><br>
+        <a href="https://solenvisuals.com" target="_blank" style="color:var(--ink);text-decoration:none">🌐 solenvisuals.com</a><br>
+        <a href="https://instagram.com/solenvisuals" target="_blank" style="color:var(--ink);text-decoration:none">📸 @solenvisuals</a>
       </div>
-      <button class="btn btn-p btn-sm" onclick="saveSettings()">Save</button>
+      <button class="btn btn-g btn-sm" onclick="go('integrations')">⚙ Integrations →</button>
     </div>
-    <div class="setting-card">
-      <div class="setting-tt">Invoice Defaults</div>
-      <div class="setting-sub">Pre-filled on new invoices</div>
-      <div class="fg"><label class="fl">Payment Terms</label><input class="fi" id="cfg-terms" placeholder="Payment due within 30 days."/></div>
-      <div class="fg"><label class="fl">Invoice Notes / Footer</label><input class="fi" id="cfg-footer" placeholder="Thank you for your business."/></div>
-      <button class="btn btn-p btn-sm" onclick="saveSettings()">Save</button>
-    </div>
+
   </div>
 </div>
 
 
+<!-- CALENDAR -->
 <!-- CALENDAR -->
 <div class="pg" id="pg-calendar">
   <div class="ph">
@@ -1467,161 +1624,196 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
 <!-- INTEGRATIONS -->
 <div class="pg" id="pg-integrations">
   <div class="ph">
-    <div><h1>Integrations</h1><p>Connect Google Calendar, Sheets & Drive</p></div>
-  </div>
-
-  <!-- HOW IT WORKS BANNER -->
-  <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:20px;font-size:13px;color:var(--ink2);line-height:1.8">
-    <b style="color:var(--ink)">How integrations work:</b> SolenTrack uses your Google account to export data.
-    You authorise once, then export with one click — no data is sent automatically without your action.
-    All exports go to <b>your own</b> Google account — we never store your credentials.
+    <div><h1>Integrations</h1><p>Connect your tools — no setup required</p></div>
   </div>
 
   <div class="integ-grid">
 
-    <!-- GOOGLE CALENDAR -->
+    <!-- CALENDAR -->
     <div class="integ-card">
       <div class="integ-hd">
         <div class="integ-logo gcal">📅</div>
         <div>
-          <div class="integ-name">Google Calendar</div>
-          <div class="integ-status disconnected" id="gcal-status">Not connected</div>
+          <div class="integ-name">Device Calendar</div>
+          <div class="integ-status" style="color:var(--success)">Ready</div>
         </div>
       </div>
-      <div class="integ-desc">
-        Export your time entries and task deadlines as calendar events. Set reminders, see your work schedule, and track time visually in Google Calendar.
-      </div>
-      <div class="integ-actions">
-        <button class="btn btn-p btn-sm" onclick="connectGoogleCalendar()">Connect Google Calendar</button>
+      <div class="integ-desc">Add your project deadlines, tasks and milestones to your phone or computer calendar — works with iPhone Calendar, Google Calendar, Outlook.</div>
+      <div class="integ-actions" style="flex-direction:column;gap:8px;margin-top:12px">
+        <button class="btn btn-p btn-sm" style="width:100%" onclick="exportAllToICS()">📅 Add All to Calendar</button>
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-g btn-sm" style="flex:1" onclick="exportProjectDeadlines()">Deadlines</button>
+          <button class="btn btn-g btn-sm" style="flex:1" onclick="exportTasksICS()">Tasks</button>
+        </div>
       </div>
       <div class="divider"></div>
-      <div style="font-size:12px;font-weight:600;margin-bottom:8px">What you can do:</div>
       <div style="font-size:11px;color:var(--ink3);line-height:2">
-        ✓ Export time entries as calendar events<br>
-        ✓ Export task deadlines with reminders<br>
-        ✓ Export project schedules<br>
-        ✓ Download .ics file (works with any calendar app)<br>
-        ✓ Add reminders to your tasks
-      </div>
-      <div class="divider"></div>
-      <div class="integ-actions">
-        <button class="btn btn-g btn-sm" onclick="exportICS()">↓ Export .ics File</button>
-        <button class="btn btn-g btn-sm" onclick="exportTasksICS()">↓ Export Deadlines</button>
+        ✓ Opens directly in your calendar app<br>
+        ✓ Works on iPhone, Android, Mac, Windows<br>
+        ✓ Project deadlines with 1-hour reminders<br>
+        ✓ Task due dates and milestones
       </div>
     </div>
 
-    <!-- GOOGLE SHEETS -->
-    <div class="integ-card">
-      <div class="integ-hd">
-        <div class="integ-logo gsheets">📊</div>
-        <div>
-          <div class="integ-name">Google Sheets</div>
-          <div class="integ-status disconnected" id="gsheets-status">Not connected</div>
-        </div>
-      </div>
-      <div class="integ-desc">
-        Export your time entries, reports and invoices directly to Google Sheets. Auto-formatted spreadsheets ready for sharing with clients or accountants.
-      </div>
-      <div class="integ-actions">
-        <button class="btn btn-p btn-sm" onclick="connectGoogleSheets()">Connect Google Sheets</button>
-      </div>
-      <div class="divider"></div>
-      <div style="font-size:12px;font-weight:600;margin-bottom:8px">What you can do:</div>
-      <div style="font-size:11px;color:var(--ink3);line-height:2">
-        ✓ Export time entries to a formatted spreadsheet<br>
-        ✓ Export invoices & earnings reports<br>
-        ✓ Export project summaries<br>
-        ✓ Download .xlsx file directly<br>
-        ✓ Share read-only links with clients
-      </div>
-      <div class="divider"></div>
-      <div class="integ-actions">
-        <button class="btn btn-g btn-sm" onclick="exportXLSX()">↓ Export .xlsx</button>
-        <button class="btn btn-g btn-sm" onclick="openSheetsTemplate()">Open Sheets Template</button>
-      </div>
-    </div>
-
-    <!-- GOOGLE DRIVE -->
+    <!-- BACKUP & RESTORE -->
     <div class="integ-card">
       <div class="integ-hd">
         <div class="integ-logo gdrive">💾</div>
         <div>
-          <div class="integ-name">Google Drive</div>
-          <div class="integ-status disconnected" id="gdrive-status">Not connected</div>
+          <div class="integ-name">Backup & Restore</div>
+          <div class="integ-status" style="color:var(--success)">Ready</div>
         </div>
       </div>
-      <div class="integ-desc">
-        Back up your SolenTrack data to Google Drive automatically. Store invoices, reports and backups safely in the cloud — accessible from any device.
-      </div>
-      <div class="integ-actions">
-        <button class="btn btn-p btn-sm" onclick="connectGoogleDrive()">Connect Google Drive</button>
+      <div class="integ-desc">Download a complete backup of all your data. Save it to iCloud Drive, Google Drive, Dropbox — anywhere you like. Restore from any backup instantly.</div>
+      <div class="integ-actions" style="flex-direction:column;gap:8px;margin-top:12px">
+        <button class="btn btn-p btn-sm" style="width:100%" onclick="exportJSON()">⬇ Download Full Backup</button>
+        <button class="btn btn-g btn-sm" style="width:100%" onclick="importJSON()">⬆ Restore from Backup</button>
       </div>
       <div class="divider"></div>
-      <div style="font-size:12px;font-weight:600;margin-bottom:8px">What you can do:</div>
       <div style="font-size:11px;color:var(--ink3);line-height:2">
-        ✓ Back up all data to Drive<br>
-        ✓ Save invoices as PDF to Drive<br>
-        ✓ Restore from Drive backup<br>
-        ✓ Auto-sync data across devices<br>
-        ✓ Share reports folder with team
-      </div>
-      <div class="divider"></div>
-      <div class="integ-actions">
-        <button class="btn btn-g btn-sm" onclick="backupToDrive()">↑ Backup to Drive</button>
-        <button class="btn btn-g btn-sm" onclick="exportJSON()">↓ Download Backup</button>
+        ✓ Saves everything — projects, time, invoices<br>
+        ✓ Works with iCloud, Google Drive, Dropbox<br>
+        ✓ JSON format — readable by any app<br>
+        ✓ Restore on any device
       </div>
     </div>
 
-    <!-- TEAM SHARING -->
+    <!-- SPREADSHEET EXPORT -->
+    <div class="integ-card">
+      <div class="integ-hd">
+        <div class="integ-logo gsheets">📊</div>
+        <div>
+          <div class="integ-name">Spreadsheet Export</div>
+          <div class="integ-status" style="color:var(--success)">Ready</div>
+        </div>
+      </div>
+      <div class="integ-desc">Export time entries, invoices and expenses as CSV. Open directly in Google Sheets, Excel or Numbers. Perfect for accountants and clients.</div>
+      <div class="integ-actions" style="flex-direction:column;gap:8px;margin-top:12px">
+        <button class="btn btn-p btn-sm" style="width:100%" onclick="exportCSV()">⬇ Export All Data (CSV)</button>
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-g btn-sm" style="flex:1" onclick="exportInvoicesCSV()">Invoices</button>
+          <button class="btn btn-g btn-sm" style="flex:1" onclick="exportExpensesCSV()">Expenses</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:11px;color:var(--ink3);line-height:2">
+        ✓ Full time log with all details<br>
+        ✓ Invoice data for accountant<br>
+        ✓ Expense reports<br>
+        ✓ Opens in Google Sheets, Excel, Numbers
+      </div>
+    </div>
+
+    <!-- AUTO SYNC TO FILE -->
+    <div class="integ-card">
+      <div class="integ-hd">
+        <div class="integ-logo gdrive" style="background:#e8f0fe">🔄</div>
+        <div>
+          <div class="integ-name">Auto Sync to Folder</div>
+          <div class="integ-status" id="filesync-status" style="color:var(--ink3)">Not set up</div>
+        </div>
+      </div>
+      <div class="integ-desc">Pick a folder on your device — SolenTrack saves your data there automatically on every change. Point it to iCloud Drive or Google Drive Desktop for cloud sync.</div>
+      <div id="filesync-no-folder" style="margin-top:12px">
+        <button class="btn btn-p btn-sm" style="width:100%" onclick="pickSyncFolder()">📁 Choose Sync Folder</button>
+        <div style="font-size:11px;color:var(--ink3);margin-top:8px;line-height:1.6">Works in Chrome/Edge and the desktop app. Choose your iCloud Drive or Google Drive folder.</div>
+      </div>
+      <div id="filesync-has-folder" style="display:none;margin-top:12px">
+        <div style="background:#dcfce7;border-radius:8px;padding:10px 12px;font-size:12px;color:var(--success);font-weight:500;margin-bottom:8px" id="filesync-folder-name">✓ Sync folder connected</div>
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-p btn-sm" style="flex:1" onclick="syncToFile()">↑ Sync Now</button>
+          <button class="btn btn-g btn-sm" style="flex:1" onclick="loadFromFile()">↓ Load</button>
+        </div>
+        <button onclick="stopFileSync()" style="margin-top:7px;font-size:11px;color:var(--ink3);background:none;border:none;cursor:pointer;text-decoration:underline;width:100%">Stop syncing</button>
+      </div>
+      <div id="filesync-fallback" style="display:none;margin-top:12px">
+        <div style="font-size:12px;color:var(--ink2);background:var(--bg);border-radius:8px;padding:12px;line-height:1.7;margin-bottom:8px">
+          <b>Open the HTML file directly</b> in Chrome or Edge to use folder sync. In preview mode, use manual backup instead.
+        </div>
+        <button class="btn btn-g btn-sm" style="width:100%" onclick="exportJSON()">⬇ Download Backup</button>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:11px;color:var(--ink3);line-height:2">
+        ✓ Auto-saves on every change<br>
+        ✓ Works with iCloud Drive, Google Drive, Dropbox<br>
+        ✓ No login needed<br>
+        ✓ Access from any app
+      </div>
+    </div>
+
+    <!-- GOOGLE DRIVE SYNC -->
+    <div class="integ-card">
+      <div class="integ-hd">
+        <div class="integ-logo gdrive" style="background:#fff0e0">☁️</div>
+        <div>
+          <div class="integ-name">Google Drive Sync</div>
+          <div class="integ-status disconnected" id="gdrive-status">Not connected</div>
+        </div>
+      </div>
+      <div class="integ-desc">Sign in with Google to automatically back up your data to Google Drive. Access from any device, restore with one click.</div>
+      <div id="drive-connect-actions" style="margin-top:12px">
+        <div id="g-signin-btn" style="margin-bottom:8px"></div>
+        <button class="btn btn-p btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px" onclick="connectGoogleDrive()">
+          <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          Sign in with Google
+        </button>
+        <div style="font-size:11px;color:var(--ink3);text-align:center;margin-top:7px;line-height:1.6">Requires adding your origin to Google Cloud Console. See note below.</div>
+      </div>
+      <div id="drive-connected-actions" style="display:none;margin-top:12px">
+        <div style="background:#dcfce7;border-radius:8px;padding:10px 12px;font-size:12px;color:var(--success);font-weight:500;margin-bottom:8px" id="drive-user-info">✓ Connected to Google Drive</div>
+        <div style="display:flex;gap:7px;margin-bottom:7px">
+          <button class="btn btn-p btn-sm" style="flex:1" onclick="drivePush()">↑ Sync Now</button>
+          <button class="btn btn-g btn-sm" style="flex:1" onclick="drivePull()">↓ Load</button>
+        </div>
+        <div style="font-size:11px;color:var(--ink3);text-align:center;margin-bottom:7px" id="drive-last-sync"></div>
+        <button class="btn btn-d btn-sm" style="width:100%;color:var(--danger)" onclick="driveDisconnect()">Disconnect</button>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:11px;color:var(--ink3);line-height:2">
+        ✓ Auto-sync every 30 seconds when connected<br>
+        ✓ Access data from any device<br>
+        ✓ Requires Google Cloud origin setup<br>
+        ✓ Only accesses SolenTrack backup file
+      </div>
+    </div>
+
+    <!-- TEAM -->
     <div class="integ-card">
       <div class="integ-hd">
         <div class="integ-logo team">👥</div>
         <div>
           <div class="integ-name">Team Workspace</div>
-          <div class="integ-status disconnected" id="team-status">Solo mode</div>
+          <div class="integ-status" style="color:var(--ink3)">Solo mode</div>
         </div>
       </div>
-      <div class="integ-desc">
-        Expand to a team — share projects, assign tasks, track team time and generate combined reports. Each member gets their own login.
-      </div>
-      <div class="integ-actions">
-        <button class="btn btn-p btn-sm" onclick="go('team')">Set Up Team →</button>
+      <div class="integ-desc">Invite team members, assign tasks, track time per person and generate combined reports.</div>
+      <div style="margin-top:12px">
+        <button class="btn btn-p btn-sm" style="width:100%" onclick="go('team')">Set Up Team →</button>
       </div>
       <div class="divider"></div>
-      <div style="font-size:12px;font-weight:600;margin-bottom:8px">Team features:</div>
       <div style="font-size:11px;color:var(--ink3);line-height:2">
         ✓ Invite team members<br>
-        ✓ Assign tasks & projects<br>
-        ✓ Track each member's time<br>
-        ✓ Combined team reports<br>
-        ✓ Role permissions (Admin / Member / Viewer)
+        ✓ Assign tasks and projects<br>
+        ✓ Role permissions (Admin/Member/Viewer)<br>
+        ✓ Combined reports
       </div>
     </div>
 
   </div>
 
-  <!-- GOOGLE API SETUP INSTRUCTIONS -->
-  <div class="card" style="margin-top:6px">
-    <div class="card-hd"><span class="card-tt">🔧 Setup Guide — Google API</span></div>
-    <div style="padding:18px 20px;font-size:13px;color:var(--ink2);line-height:1.9">
-      To connect Google Calendar, Sheets or Drive you need a free Google API key.
-      This takes about 5 minutes and is completely free:<br><br>
-      <b>1.</b> Go to <a href="https://console.cloud.google.com" target="_blank" style="color:var(--ink);text-decoration:underline">console.cloud.google.com</a><br>
-      <b>2.</b> Create a new project called "SolenTrack"<br>
-      <b>3.</b> Enable: Google Calendar API, Google Sheets API, Google Drive API<br>
-      <b>4.</b> Go to Credentials → Create → OAuth 2.0 Client ID → Web application<br>
-      <b>5.</b> Add your GitHub Pages URL as an authorised origin: <code style="background:var(--bg);padding:1px 6px;border-radius:3px">https://hamadatail.github.io</code><br>
-      <b>6.</b> Copy your Client ID and paste it in Settings → Integrations<br><br>
-      <div class="fg" style="max-width:500px">
-        <label class="fl">Google Client ID</label>
-        <input class="fi" id="cfg-google-client-id" placeholder="xxxxxxxxxxxx.apps.googleusercontent.com"/>
-      </div>
-      <button class="btn btn-p btn-sm" style="margin-top:8px" onclick="saveGoogleClientId()">Save Client ID</button>
+  <!-- Google Cloud setup note -->
+  <div class="card" style="margin-top:14px;border-left:3px solid var(--warn)">
+    <div class="card-hd"><span class="card-tt">⚡ One-time setup for Google Drive sync</span></div>
+    <div style="padding:16px 20px;font-size:13px;line-height:1.9;color:var(--ink2)">
+      Add these <b>Authorised JavaScript origins</b> in your <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--ink);text-decoration:underline">Google Cloud Console</a>:<br>
+      <code style="display:block;background:var(--bg);padding:10px 14px;border-radius:6px;font-size:12px;line-height:2.2;margin:10px 0">https://hamadatail.github.io<br>http://localhost<br>http://localhost:3000</code>
+      Then refresh this page and click <b>Sign in with Google</b>. This is a one-time setup.
     </div>
   </div>
+
+  <input type="file" id="import-file" accept=".json" style="display:none" onchange="doImport(event)"/>
 </div>
 
-<!-- TEAM -->
 <div class="pg" id="pg-team">
   <div class="ph">
     <div><h1>Team</h1><p>Manage your team, roles and shared projects</p></div>
@@ -1771,31 +1963,31 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
 <!-- ══════════════ PIPELINE ══════════════ -->
 <div class="pg" id="pg-pipeline">
   <div class="ph">
-    <div><h1>Pipeline</h1><p>Quote → Approved → Project → Invoiced → Won</p></div>
+    <div><h1>Pipeline</h1><p>Manage your quotes and project funnel</p></div>
     <div class="ph-acts">
+      <button class="btn btn-g btn-sm" onclick="pipeFilter('')" id="pipe-filter-all">All</button>
       <button class="btn btn-p" onclick="openNewQuote()">+ New Quote</button>
     </div>
   </div>
-  <div class="pipe-steps">
-    <div class="pipe-step"><div class="pipe-node pending" onclick="pipeFilter('quote')" id="pipe-tab-quote">Quotes</div></div>
-    <div class="pipe-arrow">›</div>
-    <div class="pipe-step"><div class="pipe-node pending" onclick="pipeFilter('approved')" id="pipe-tab-approved">Approved</div></div>
-    <div class="pipe-arrow">›</div>
-    <div class="pipe-step"><div class="pipe-node pending" onclick="pipeFilter('project')" id="pipe-tab-project">In Progress</div></div>
-    <div class="pipe-arrow">›</div>
-    <div class="pipe-step"><div class="pipe-node pending" onclick="pipeFilter('invoiced')" id="pipe-tab-invoiced">Invoiced</div></div>
-    <div class="pipe-arrow">›</div>
-    <div class="pipe-step"><div class="pipe-node pending" onclick="pipeFilter('won')" id="pipe-tab-won">Won</div></div>
-    <div class="pipe-arrow">›</div>
-    <div class="pipe-step"><div class="pipe-node pending" onclick="pipeFilter('lost')" id="pipe-tab-lost">Lost</div></div>
-    <div class="pipe-arrow">›</div>
-    <div class="pipe-step"><div class="pipe-node active" onclick="pipeFilter('all')" id="pipe-tab-all">All</div></div>
+
+  <!-- Pipeline stats -->
+  <div class="stats" id="pipe-stats" style="margin-bottom:14px"></div>
+
+  <!-- Stage tabs -->
+  <div style="display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg)">
+    <button class="pipe-tab-btn active" id="pipe-tab-all" onclick="pipeFilter('')" style="flex:1;padding:10px 6px;font-size:11px;font-weight:600;border:none;background:none;cursor:pointer;border-right:1px solid var(--border);color:var(--ink)">All</button>
+    <button class="pipe-tab-btn" id="pipe-tab-quote" onclick="pipeFilter('quote')" style="flex:1;padding:10px 6px;font-size:11px;font-weight:600;border:none;background:none;cursor:pointer;border-right:1px solid var(--border);color:var(--ink3)">Quotes</button>
+    <button class="pipe-tab-btn" id="pipe-tab-approved" onclick="pipeFilter('approved')" style="flex:1;padding:10px 6px;font-size:11px;font-weight:600;border:none;background:none;cursor:pointer;border-right:1px solid var(--border);color:var(--ink3)">Approved</button>
+    <button class="pipe-tab-btn" id="pipe-tab-project" onclick="pipeFilter('project')" style="flex:1;padding:10px 6px;font-size:11px;font-weight:600;border:none;background:none;cursor:pointer;border-right:1px solid var(--border);color:var(--ink3)">In Progress</button>
+    <button class="pipe-tab-btn" id="pipe-tab-invoiced" onclick="pipeFilter('invoiced')" style="flex:1;padding:10px 6px;font-size:11px;font-weight:600;border:none;background:none;cursor:pointer;border-right:1px solid var(--border);color:var(--ink3)">Invoiced</button>
+    <button class="pipe-tab-btn" id="pipe-tab-won" onclick="pipeFilter('won')" style="flex:1;padding:10px 6px;font-size:11px;font-weight:600;border:none;background:none;cursor:pointer;border-right:1px solid var(--border);color:var(--ink3)">Won</button>
+    <button class="pipe-tab-btn" id="pipe-tab-lost" onclick="pipeFilter('lost')" style="flex:1;padding:10px 6px;font-size:11px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--ink3)">Lost</button>
   </div>
-  <div class="stats" id="pipe-stats"></div>
+
   <div id="pipe-list"></div>
 </div>
 
-<!-- ══════════════ PROFITABILITY ══════════════ -->
+<!-- ══════════════ PROFITABILITY <!-- ══════════════ PROFITABILITY ══════════════ -->
 <div class="pg" id="pg-profitability">
   <div class="ph">
     <div><h1>Profitability</h1><p>Revenue vs cost vs time — know what actually makes you money</p></div>
@@ -1813,7 +2005,7 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
   <div class="crow" style="margin-bottom:14px">
     <div class="ccard" style="flex:2">
       <div class="ctt">Revenue vs Expenses by Project</div>
-      <div id="profit-chart" style="height:150px;margin-top:8px"></div>
+      <div id="profit-chart" style="height:160px;margin-top:8px;overflow:hidden"></div>
     </div>
     <div class="ccard" style="flex:1">
       <div class="ctt">Margin Distribution</div>
@@ -1835,7 +2027,7 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
   <div class="crow" style="margin-bottom:14px">
     <div class="ccard" style="flex:2">
       <div class="ctt">Monthly Income vs Expenses</div>
-      <div id="tax-chart" style="height:140px;margin-top:8px"></div>
+      <div id="tax-chart" style="height:150px;margin-top:8px;overflow:hidden"></div>
     </div>
     <div class="ccard" style="flex:1">
       <div class="ctt">Tax Year Summary</div>
@@ -1882,15 +2074,17 @@ td.g{font-family:var(--mono);font-weight:500;color:var(--success);}
 <!-- ══════════════ REVISIONS ══════════════ -->
 <div class="pg" id="pg-revisions">
   <div class="ph">
-    <div><h1>Revision Tracker</h1><p>Track revision rounds per project — flag when clients exceed their limit</p></div>
+    <div><h1>Revision Tracker</h1><p>Track revision rounds — flag when clients exceed their limit</p></div>
     <div class="ph-acts">
+      <button class="btn btn-g btn-sm" onclick="renderRevisions()">↻ Refresh</button>
       <button class="btn btn-p" onclick="openAddRevision()">+ Log Revision</button>
     </div>
   </div>
+  <div class="stats" id="rev-stats" style="margin-bottom:14px"></div>
   <div id="rev-list"></div>
 </div>
 
-<!-- ══════════════ BRIEFS ══════════════ -->
+<!-- ══════════════ BRIEFS <!-- ══════════════ BRIEFS ══════════════ -->
 <div class="pg" id="pg-briefs">
   <div class="ph">
     <div><h1>Client Briefs</h1><p>Shareable intake forms — clients fill in, you get a new project</p></div>
@@ -2359,10 +2553,11 @@ const KEY = 'solentrack_v4';
 let D = {
   entries:[], projects:[], tasks:[], clients:[], invoices:[], goals:[],
   history:[], nextInv:1001,
-  sessions:[], // long-running pausable sessions
-  team:[], // team members
+  sessions:[],
+  team:[],
   milestones:[], expenses:[], workflows:[],
-  cfg:{ name:'SolenVisuals', email:'hello@solenvisuals.com', web:'www.solenvisuals.com',
+  quotes:[], templates:[], revisions:[], briefs:[],
+  cfg:{ name:'SolenVisuals', email:'hello@solenvisuals.com', web:'www.solenvisuals.com', phone:'',
         addr:'London, United Kingdom', cur:'£', rate:0, bill:0,
         terms:'Payment due within 30 days.', footer:'Thank you for your business — SolenVisuals.' }
 };
@@ -2375,11 +2570,6 @@ let pomodoroInterval = null, pomodoroRunning = false, pomodoroSecs = 0, pomodoro
 // ═══════════════════════════════════════════════════
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(D)); }catch(e){}
-  // Auto-sync to Drive (debounced 3s)
-  if(typeof gToken!=='undefined'&&gToken){
-    clearTimeout(save._dt);
-    save._dt=setTimeout(function(){if(typeof drivePush==='function')drivePush();},3000);
-  }
 }
 function load() {
   try { const r = localStorage.getItem(KEY); if(r){ const p=JSON.parse(r); D={...D,...p}; if(p.cfg) D.cfg={...D.cfg,...p.cfg}; } } catch(e){}
@@ -2390,8 +2580,18 @@ function load() {
   if (!D.invoices) D.invoices = [];
   if (!D.goals) D.goals = [];
   if (!D.history) D.history = [];
-  if (!D.sessions) D.sessions = [];
-  if (!D.cfg) D.cfg = {};
+  if (!D.sessions)   D.sessions   = [];
+  if (!D.cfg)        D.cfg        = {};
+  // Extended state — must all be initialised
+  if (!D.milestones) D.milestones = [];
+  if (!D.expenses)   D.expenses   = [];
+  if (!D.workflows)  D.workflows  = [];
+  if (!D.quotes)     D.quotes     = [];
+  if (!D.templates)  D.templates  = [];
+  if (!D.revisions)  D.revisions  = [];
+  if (!D.briefs)     D.briefs     = [];
+  if (!D.team)       D.team       = [];
+  if (!D.nextInv)    D.nextInv    = 1001;
   if (!D.projects.length) seedDemo();
 }
 //addLog replaced
@@ -3021,30 +3221,7 @@ function renderReports(){
 // ═══════════════════════════════════════════════════
 // GOALS
 // ═══════════════════════════════════════════════════
-function renderGoals(){
-  const wrap=document.getElementById('goals-wrap');
-  if(!D.goals.length){wrap.innerHTML='<div class="empty"><div class="empty-ic">◎</div><p>No goals set yet</p></div>';return;}
-  const ws=totSecs(weekEntries()),ts=totSecs(D.entries.filter(e=>e.date===today())),we=earnings(weekEntries());
-  wrap.innerHTML=D.goals.map(g=>{
-    let cur2=0; if(g.type==='weekly_hours')cur2=ws/3600; else if(g.type==='daily_hours')cur2=ts/3600; else cur2=we;
-    const pct=Math.min(100,Math.round((cur2/g.target)*100)),done=pct>=100;
-    const streak=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return D.entries.some(e=>e.date===iso(d));});
-    const dispCur=g.type==='earnings'?money(cur2):cur2.toFixed(1)+'h';
-    const dispTgt=g.type==='earnings'?money(g.target):g.target+'h';
-    return `<div class="gcard">
-      <div class="gcard-hd">
-        <div><div class="gcard-tt">${done?'✓ ':''}${esc(g.title)}</div><div class="gcard-nm">${dispCur} of ${dispTgt}${done?' — Target reached!':''}</div></div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-family:var(--mono);font-size:12px;font-weight:500">${pct}%</span>
-          <button class="ab del" onclick="delGoal('${g.id}')">✕</button><button class="ab" onclick="editGoal('${g.id}')">Edit</button>
-        </div>
-      </div>
-      <div class="prog" style="height:4px"><div class="pf" style="width:${pct}%;background:${done?'var(--success)':'var(--ink)'}"></div></div>
-      <div style="margin-top:9px"><div style="font-family:var(--mono);font-size:9px;color:var(--ink3);letter-spacing:.12em;margin-bottom:4px">7-DAY ACTIVITY</div>
-      <div class="srow">${streak.map(d=>`<div class="sday${d?' on':''}"></div>`).join('')}</div></div>
-    </div>`;
-  }).join('');
-}
+//rm:renderGoals
 function delGoal(id){ D.goals=D.goals.filter(g=>g.id!==id); save(); renderGoals(); notify('Goal removed',true); }
 
 // ═══════════════════════════════════════════════════
@@ -3419,62 +3596,13 @@ function renderCalDeadlines(){
 // ═══════════════════════════════════════════════════
 // GOOGLE CALENDAR EXPORT (.ics)
 // ═══════════════════════════════════════════════════
-function exportICS(){
-  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SolenTrack//SolenVisuals//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
-  D.entries.forEach(e=>{
-    const d=e.date.replace(/-/g,'');
-    const sh=(e.start||'09:00').replace(':','')+'00';
-    const eh=(e.end||'10:00').replace(':','')+'00';
-    const uid2=`${e.id}@solentrack`;
-    lines.push('BEGIN:VEVENT',
-      `UID:${uid2}`,`DTSTART:${d}T${sh}`,`DTEND:${d}T${eh}`,
-      `SUMMARY:${esc(e.desc||'Work session')} [${esc(pname(e.project))}]`,
-      `DESCRIPTION:Duration: ${fmtDur(e.duration)}\nBillable: ${e.billable==1?'Yes':'No'}\nProject: ${esc(pname(e.project))}`,
-      `CATEGORIES:${e.billable==1?'BILLABLE':'WORK'}`,
-      'END:VEVENT');
-  });
-  lines.push('END:VCALENDAR');
-  const blob=new Blob([lines.join('\r\n')],{type:'text/calendar'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='SolenTrack-entries.ics'; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
-  addLog('📅','Exported time entries as .ics calendar file');
-  notify('Calendar file downloaded — import into Google Calendar');
-}
+//exportICS removed
 
-function exportTasksICS(){
-  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SolenTrack//SolenVisuals//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
-  D.tasks.filter(t=>t.due&&t.status!=='done').forEach(t=>{
-    const d=t.due.replace(/-/g,'');
-    lines.push('BEGIN:VEVENT',
-      `UID:task-${t.id}@solentrack`,`DTSTART;VALUE=DATE:${d}`,`DTEND;VALUE=DATE:${d}`,
-      `SUMMARY:⚑ ${esc(t.name)} [${esc(pname(t.project))}]`,
-      `DESCRIPTION:Priority: ${t.priority}\nProject: ${esc(pname(t.project))}\nStatus: ${t.status}`,
-      `BEGIN:VALARM`,`ACTION:DISPLAY`,`DESCRIPTION:Deadline: ${esc(t.name)}`,`TRIGGER:-PT1H`,`END:VALARM`,
-      'END:VEVENT');
-  });
-  lines.push('END:VCALENDAR');
-  const blob=new Blob([lines.join('\r\n')],{type:'text/calendar'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='SolenTrack-deadlines.ics'; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
-  addLog('📅','Exported task deadlines as .ics file');
-  notify('Deadlines exported — import into Google Calendar');
-}
+//exportTasksICS removed
 
 //exportToGoogleCalendar replaced
 
-function connectGoogleCalendar(){
-  const cid=D.cfg.googleClientId;
-  if(!cid){
-    notify('Add your Google Client ID in the setup guide below first',true);
-    document.getElementById('cfg-google-client-id')?.focus();
-    return;
-  }
-  const scope='https://www.googleapis.com/auth/calendar.events';
-  const redirect=encodeURIComponent(window.location.href.split('?')[0]);
-  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${cid}&redirect_uri=${redirect}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
-  window.open(url,'_blank','width=500,height=600');
-  notify('Google sign-in opened — after authorising, use Export buttons');
-}
+//connectGoogleCalendar removed
 
 // ═══════════════════════════════════════════════════
 // GOOGLE SHEETS EXPORT (.xlsx / CSV)
@@ -3520,66 +3648,23 @@ function exportXLSX(){
   notify('Spreadsheet exported — open in Google Sheets or Excel');
 }
 
-function openSheetsTemplate(){
-  // Open a pre-built Google Sheets template
-  const url='https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms/copy';
-  window.open(url,'_blank');
-  notify('Opening Sheets template — then use File > Import to add your CSV');
-}
+//openSheetsTemplate removed
 
-function connectGoogleSheets(){
-  const cid=D.cfg.googleClientId;
-  if(!cid){ notify('Add your Google Client ID in the setup guide first',true); return; }
-  const scope='https://www.googleapis.com/auth/spreadsheets';
-  const redirect=encodeURIComponent(window.location.href.split('?')[0]);
-  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${cid}&redirect_uri=${redirect}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
-  window.open(url,'_blank','width=500,height=600');
-  notify('Google sign-in opened');
-}
+//connectGoogleSheets removed
 
 // ═══════════════════════════════════════════════════
 // GOOGLE DRIVE EXPORT
 // ═══════════════════════════════════════════════════
-function backupToDrive(){
-  // Download JSON backup and guide user to upload to Drive
-  exportJSON();
-  setTimeout(()=>{
-    if(confirm('Backup downloaded! Open Google Drive to upload it?')){
-      window.open('https://drive.google.com','_blank');
-    }
-  },800);
-}
+//backupToDrive removed
 
 // connectGoogleDrive: see implementation below
 
-function saveGoogleClientId(){
-  const id=document.getElementById('cfg-google-client-id')?.value.trim();
-  if(!id){ notify('Enter a Client ID',true); return; }
-  D.cfg.googleClientId=id;
-  save();
-  notify('Google Client ID saved ✓');
-  addLog('⚙️','Google Client ID configured');
-}
+//saveGoogleClientId removed
 
 // ═══════════════════════════════════════════════════
 // INTEGRATIONS PAGE RENDER
 // ═══════════════════════════════════════════════════
-function renderIntegrations(){
-  // Restore saved client ID if any
-  const savedId=D.cfg.googleClientId||'';
-  const el=document.getElementById('cfg-google-client-id');
-  if(el) el.value=savedId;
-
-  // Update connection status badges
-  const connected=!!savedId;
-  ['gcal','gsheets','gdrive'].forEach(id=>{
-    const el2=document.getElementById(id+'-status');
-    if(el2){
-      el2.textContent=connected?'Client ID configured':'Not connected';
-      el2.className='integ-status '+(connected?'connected':'disconnected');
-    }
-  });
-}
+//renderIntegrations removed
 
 // ═══════════════════════════════════════════════════
 // TEAM
@@ -3697,8 +3782,6 @@ function exportTeamJSON(){
 }
 
 // GOOGLE DRIVE REAL SYNC
-let gToken=null,gFileId=null,syncTimer=null;
-var DRIVE_FILE='solentrack-data.json';
 function saveToken(token,expiresIn){
   gToken=token;
   var exp=Date.now()+(parseInt(expiresIn)||3600)*1000-60000;
@@ -3717,35 +3800,7 @@ function clearToken(){
   gToken=null;gFileId=null;
   try{localStorage.removeItem('st_gtoken');localStorage.removeItem('st_gtoken_exp');localStorage.removeItem('st_gfileid');}catch(e){}
 }
-function connectGoogleDrive(){
-  var cid=D.cfg.googleClientId;
-  if(!cid){notify('Add your Google Client ID in Integrations first',true);return;}
-  var scope=encodeURIComponent('https://www.googleapis.com/auth/drive.file');
-  var url='https://accounts.google.com/o/oauth2/v2/auth?client_id='+cid+'&redirect_uri='+encodeURIComponent(window.location.href.split('#')[0])+'&response_type=token&scope='+scope+'&prompt=consent';
-  var popup=window.open(url,'google-auth','width=520,height=620');
-  var poll=setInterval(function(){
-    try{
-      if(!popup||popup.closed){clearInterval(poll);return;}
-      var hash=popup.location.hash;
-      if(hash&&hash.includes('access_token')){
-        clearInterval(poll);popup.close();
-        var params=new URLSearchParams(hash.slice(1));
-        var token=params.get('access_token');
-        if(token){saveToken(token,params.get('expires_in'));notify('Google Drive connected!');}
-      }
-    }catch(e){}
-  },500);
-  window.addEventListener('hashchange',function onHash(){
-    var hash=window.location.hash;
-    if(hash.includes('access_token')){
-      window.removeEventListener('hashchange',onHash);
-      var params=new URLSearchParams(hash.slice(1));
-      var token=params.get('access_token');
-      if(token){saveToken(token,params.get('expires_in'));notify('Google Drive connected!');}
-      history.replaceState(null,'',window.location.pathname+window.location.search);
-    }
-  });
-}
+//connectGoogleDrive removed
 function onDriveConnected(){
   var ca=document.getElementById('drive-connect-actions');
   var da=document.getElementById('drive-connected-actions');
@@ -3759,18 +3814,7 @@ function onDriveConnected(){
   try{gFileId=localStorage.getItem('st_gfileid')||null;}catch(e){}
   driveSync();
 }
-function driveDisconnect(){
-  clearToken();clearInterval(syncTimer);
-  var ca=document.getElementById('drive-connect-actions');
-  var da=document.getElementById('drive-connected-actions');
-  if(ca)ca.style.display='block';
-  if(da)da.style.display='none';
-  var bar=document.getElementById('sync-bar');
-  if(bar)bar.style.display='none';
-  var st=document.getElementById('gdrive-status');
-  if(st){st.textContent='Not connected';st.className='integ-status disconnected';}
-  notify('Drive disconnected');
-}
+//driveDisconnect removed
 function setSyncStatus(state,label){
   var bar=document.getElementById('sync-bar');
   var dot=document.getElementById('sync-dot');
@@ -3816,60 +3860,11 @@ async function findOrCreateFile(){
   }
   return null;
 }
-async function drivePush(){
-  if(!gToken)return;
-  setSyncStatus('syncing','Syncing...');
-  try{
-    var fid=await findOrCreateFile();
-    if(!fid){setSyncStatus('error','Sync failed');return;}
-    var payload=JSON.stringify(Object.assign({},D,{_syncedAt:new Date().toISOString()}));
-    var boundary='st_boundary';
-    var sep='\r\n';
-    var body='--'+boundary+sep+'Content-Type: application/json'+sep+sep+JSON.stringify({name:'solentrack-data.json'})+sep+'--'+boundary+sep+'Content-Type: application/json'+sep+sep+payload+sep+'--'+boundary+'--';
-    var res=await driveRequest('PATCH','https://www.googleapis.com/upload/drive/v3/files/'+fid+'?uploadType=multipart&fields=id',body,'multipart/related; boundary='+boundary);
-    if(res&&res.id)setSyncStatus('synced','Synced to Drive');
-    else setSyncStatus('error','Sync failed');
-  }catch(e){setSyncStatus('error','Sync error');}
-}
-async function drivePull(){
-  if(!gToken){notify('Connect to Google Drive first',true);return;}
-  setSyncStatus('syncing','Loading from Drive...');
-  try{
-    var fid=await findOrCreateFile();
-    if(!fid){setSyncStatus('error','File not found');return;}
-    var content=await driveRequest('GET','https://www.googleapis.com/drive/v3/files/'+fid+'?alt=media');
-    if(!content){setSyncStatus('error','Pull failed');return;}
-    var data=typeof content==='string'?JSON.parse(content):content;
-    if(data&&data.entries!==undefined){
-      var merged=Object.assign({},D,data);
-      if(data.cfg)merged.cfg=Object.assign({},D.cfg,data.cfg);
-      D=merged;
-      save();renderDash();updateSB();syncSelects();
-      setSyncStatus('synced','Loaded from Drive');
-      notify('Data loaded from Google Drive!');
-    }
-  }catch(e){setSyncStatus('error','Pull failed');notify('Failed to load from Drive',true);}
-}
-async function driveSync(){
-  if(!gToken)return;
-  if(!loadToken()){setSyncStatus('error','Session expired - reconnect');return;}
-  await drivePush();
-}
+//rm:drivePush
+//rm:drivePull
+//rm:driveSync
 // Drive sync integrated into save() above
-function checkDriveTokenOnLoad(){
-  var hash=window.location.hash;
-  if(hash&&hash.includes('access_token')){
-    var params=new URLSearchParams(hash.slice(1));
-    var token=params.get('access_token');
-    if(token){
-      saveToken(token,params.get('expires_in'));
-      history.replaceState(null,'',window.location.pathname+window.location.search);
-      notify('Google Drive connected!');
-    }
-  } else if(loadToken()){
-    onDriveConnected();
-  }
-}
+//checkDriveTokenOnLoad removed
 
 // delMilestone replaced below
 
@@ -5163,15 +5158,7 @@ function openGoalModal(){
   document.getElementById('go-type').value='weekly_hours';
   om('m-goal');
 }
-function editGoal(id){
-  var g=D.goals.find(function(x){return x.id===id;});
-  if(!g)return;
-  document.getElementById('m-goal').dataset.editId=id;
-  document.getElementById('go-tt').value=g.title||'';
-  document.getElementById('go-tgt').value=g.target||'';
-  document.getElementById('go-type').value=g.type||'weekly_hours';
-  om('m-goal');
-}
+//rm:editGoal
 function saveGoal(){
   var title=document.getElementById('go-tt').value.trim();
   var target=parseFloat(document.getElementById('go-tgt').value)||0;
@@ -5277,38 +5264,8 @@ function doImport(event){
 // ═══════════════════════════════════════════════
 // SETTINGS SAVE — includes all fields
 // ═══════════════════════════════════════════════
-function renderSettings(){
-  var connected=!!gToken;
-  var sb2=document.getElementById('settings-sync-btn');if(sb2)sb2.style.display=connected?'inline-flex':'none';
-  var pb=document.getElementById('settings-pull-btn');if(pb)pb.style.display=connected?'inline-flex':'none';
-  var c=D.cfg;
-  var fields={
-    'cfg-name':c.name||'','cfg-email':c.email||'','cfg-web':c.web||'',
-    'cfg-addr':c.addr||'','cfg-cur':c.cur||'£','cfg-rate':c.rate||'',
-    'cfg-terms':c.terms||'','cfg-footer':c.footer||'','cfg-bill':String(c.bill||0)
-  };
-  Object.keys(fields).forEach(function(id){
-    var el=document.getElementById(id);
-    if(el)el.value=fields[id];
-  });
-  var pathEl=document.getElementById('cfg-data-path');
-  if(pathEl&&window.solenApp&&window.solenApp.isElectron){
-    window.solenApp.getDataPath().then(function(p){pathEl.textContent=p;}).catch(function(){});
-  }
-}
-function saveSettings(){
-  D.cfg.name=document.getElementById('cfg-name')?.value.trim()||D.cfg.name;
-  D.cfg.email=document.getElementById('cfg-email')?.value.trim()||D.cfg.email;
-  D.cfg.web=document.getElementById('cfg-web')?.value.trim()||D.cfg.web;
-  D.cfg.addr=document.getElementById('cfg-addr')?.value.trim()||D.cfg.addr;
-  D.cfg.cur=document.getElementById('cfg-cur')?.value.trim()||'£';
-  D.cfg.rate=parseFloat(document.getElementById('cfg-rate')?.value)||D.cfg.rate||0;
-  D.cfg.terms=document.getElementById('cfg-terms')?.value.trim()||D.cfg.terms;
-  D.cfg.footer=document.getElementById('cfg-footer')?.value.trim()||D.cfg.footer;
-  D.cfg.bill=parseInt(document.getElementById('cfg-bill')?.value)||0;
-  addLog('cog','Settings saved');
-  save();notify('Settings saved');
-}
+//rm:renderSettings
+//rm:saveSettings
 function resetData(){
   if(!confirm('RESET ALL DATA? This cannot be undone.'))return;
   var cfg=Object.assign({},D.cfg);
@@ -5448,62 +5405,8 @@ function showPortalPage(data){
 }
 // ─── PIPELINE ──────────────────────────────────────
 var pipeFilterVal='all';
-function renderPipeline(){
-  // Sync client select in quote modal
-  var cs=document.getElementById('qt-client');
-  if(cs)cs.innerHTML='<option value="">Select client...</option>'+D.clients.map(function(cl){return '<option value="'+cl.id+'">'+esc(cl.name)+'</option>';}).join('');
-  var quotes=D.quotes||[];
-  // Stats
-  var stageTotals={quote:0,approved:0,project:0,invoiced:0,won:0,lost:0};
-  var stageValues={quote:0,approved:0,project:0,invoiced:0,won:0,lost:0};
-  quotes.forEach(function(q){stageTotals[q.stage]=(stageTotals[q.stage]||0)+1;stageValues[q.stage]=(stageValues[q.stage]||0)+(q.value||0);});
-  var pipeline=quotes.filter(function(q){return q.stage!=='lost';}).reduce(function(a,q){return a+(q.value||0);},0);
-  var won=stageValues.won||0;
-  var statsEl=document.getElementById('pipe-stats');
-  if(statsEl)statsEl.innerHTML=
-    '<div class="sc"><div class="sc-lbl">Pipeline Value</div><div class="sc-val">'+money(pipeline)+'</div><div class="sc-sub">'+quotes.filter(function(q){return q.stage!=='lost'&&q.stage!=='won';}).length+' active</div></div>'
-    +'<div class="sc"><div class="sc-lbl">Won</div><div class="sc-val" style="color:var(--success)">'+money(won)+'</div><div class="sc-sub">'+(stageTotals.won||0)+' closed</div></div>'
-    +'<div class="sc"><div class="sc-lbl">Quotes Out</div><div class="sc-val">'+money(stageValues.quote||0)+'</div><div class="sc-sub">'+(stageTotals.quote||0)+' pending</div></div>'
-    +'<div class="sc"><div class="sc-lbl">Win Rate</div><div class="sc-val">'+(quotes.length>0?Math.round(((stageTotals.won||0)/quotes.length)*100)+'%':'—')+'</div></div>';
-  // Update tab styles
-  ['quote','approved','project','invoiced','won','lost','all'].forEach(function(s){
-    var tab=document.getElementById('pipe-tab-'+s);
-    if(!tab)return;
-    tab.className='pipe-node '+(s===pipeFilterVal?'active':'pending');
-    if(s!=='all'&&stageTotals[s]>0)tab.textContent=s.charAt(0).toUpperCase()+s.slice(1)+' ('+stageTotals[s]+')';
-  });
-  // Filter and render
-  var list=quotes.slice().sort(function(a,b){return (b.value||0)-(a.value||0);});
-  if(pipeFilterVal!=='all')list=list.filter(function(q){return q.stage===pipeFilterVal;});
-  var stageLabel={quote:'Quote Sent',approved:'Approved',project:'In Progress',invoiced:'Invoiced',won:'Won',lost:'Lost'};
-  var stageCls={quote:'pipe-quote',approved:'pipe-approved',project:'pipe-project',invoiced:'pipe-invoiced',won:'pipe-won',lost:'pipe-lost'};
-  var el=document.getElementById('pipe-list');
-  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ic">◷</div><p>No quotes yet. Click "+ New Quote" to start tracking your pipeline.</p></div>';return;}
-  el.innerHTML=list.map(function(q){
-    var nextStages=[];
-    var flow=['quote','approved','project','invoiced','won'];
-    var idx=flow.indexOf(q.stage);
-    if(idx>=0&&idx<flow.length-1)nextStages.push(flow[idx+1]);
-    if(q.stage!=='lost')nextStages.push('lost');
-    return '<div class="pipe-item">'+
-      '<div class="pipe-item-hd">'+
-        '<div>'+
-          '<div class="pipe-item-name">'+esc(q.name)+'</div>'+
-          '<div class="pipe-item-meta">'+(q.client?esc(cname(q.client)):'No client')+(q.closeDate?' · Close: '+q.closeDate:'')+'</div>'+
-        '</div>'+
-        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
-          '<span style="font-family:var(--mono);font-size:14px;font-weight:600">'+money(q.value||0)+'</span>'+
-          '<span class="pipe-badge '+stageCls[q.stage]+'">'+stageLabel[q.stage]+'</span>'+
-          nextStages.map(function(s){return '<button class="btn btn-g btn-xs" onclick="advancePipe(\''+q.id+'\',\''+s+'\')">'+(s==='lost'?'Lost':'→ '+stageLabel[s])+'</button>';}).join('')+
-          '<button class="ab" onclick="editQuote(\''+q.id+'\')" >Edit</button>'+
-          '<button class="ab del" onclick="confirmDel(\'Delete quote?\',function(){delQuote(\''+q.id+'\');})">✕</button>'+
-        '</div>'+
-      '</div>'+
-      (q.notes?'<div class="tl-note" style="margin-top:8px">'+esc(q.notes)+'</div>':'')+
-    '</div>';
-  }).join('');
-}
-function pipeFilter(stage){pipeFilterVal=stage;renderPipeline();}
+//rm:renderPipeline
+//rm:pipeFilter
 function openNewQuote(){
   syncSelects();
   var cs=document.getElementById('qt-client');
@@ -5518,22 +5421,7 @@ function openNewQuote(){
   document.getElementById('qt-notes').value='';
   om('m-quote');
 }
-function editQuote(id){
-  var q=(D.quotes||[]).find(function(x){return x.id===id;});
-  if(!q)return;
-  var cs=document.getElementById('qt-client');
-  if(cs)cs.innerHTML='<option value="">Select client...</option>'+D.clients.map(function(cl){return '<option value="'+cl.id+'">'+esc(cl.name)+'</option>';}).join('');
-  document.getElementById('quote-modal-title').textContent='Edit Quote';
-  document.getElementById('quote-save-btn').textContent='Save Changes';
-  document.getElementById('m-quote').dataset.editId=id;
-  document.getElementById('qt-name').value=q.name||'';
-  document.getElementById('qt-client').value=q.client||'';
-  document.getElementById('qt-value').value=q.value||'';
-  document.getElementById('qt-stage').value=q.stage||'quote';
-  document.getElementById('qt-close').value=q.closeDate||'';
-  document.getElementById('qt-notes').value=q.notes||'';
-  om('m-quote');
-}
+//rm:editQuote
 function saveQuote(){
   var name=document.getElementById('qt-name').value.trim();
   if(!name){notify('Enter a project name',true);return;}
@@ -5866,59 +5754,7 @@ function startFromTemplate(id){
   },150);
 }
 // ─── REVISIONS ─────────────────────────────────────
-function renderRevisions(){
-  var revisions=D.revisions||[];
-  var el=document.getElementById('rev-list');
-  if(!el)return;
-  // Group by project
-  var byProj={};
-  revisions.forEach(function(r){
-    if(!byProj[r.project])byProj[r.project]={limit:r.limit||2,logs:[]};
-    byProj[r.project].limit=r.limit||byProj[r.project].limit;
-    byProj[r.project].logs.push(r);
-  });
-  // Also show projects with no revisions yet (from active projects)
-  D.projects.filter(function(p){return p.status!=='done';}).forEach(function(p){
-    if(!byProj[p.id])byProj[p.id]={limit:2,logs:[]};
-  });
-  var projIds=Object.keys(byProj);
-  if(!projIds.length){el.innerHTML='<div class="empty"><div class="empty-ic">◇</div><p>No active projects yet</p></div>';return;}
-  el.innerHTML=projIds.map(function(pid){
-    var data=byProj[pid];
-    var count=data.logs.length;
-    var limit=data.limit;
-    var over=count>limit;
-    var dots=[];
-    for(var i=0;i<Math.max(limit,count);i++){
-      var cls=i<count?(i>=limit?'over':'used'):'';
-      dots.push('<div class="rev-dot '+cls+'"></div>');
-    }
-    var logs=data.logs.slice().sort(function(a,b){return (b.ts||'').localeCompare(a.ts||'');});
-    return '<div class="rev-item">'+
-      '<div class="rev-hd">'+
-        '<div>'+
-          '<div class="rev-proj"><span class="dot" style="background:'+pcolor(pid)+'"></span>'+esc(pname(pid))+'</div>'+
-          (over?'<div style="font-size:11px;color:var(--danger);margin-top:2px;font-weight:600">⚑ '+( count-limit)+' revision'+(count-limit!==1?'s':'')+' over limit — raise a Change Order</div>':'')+'</div>'+
-        '<div class="rev-counter">'+
-          '<div>'+
-            '<div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--ink3);text-align:center;margin-bottom:3px">USED / LIMIT</div>'+
-            '<div style="display:flex;align-items:baseline;gap:4px;justify-content:center">'+
-              '<div class="rev-num" style="color:'+(over?'var(--danger)':count===limit?'var(--warn)':'var(--ink)')+'">'+count+'</div>'+
-              '<div class="rev-of">/ '+limit+'</div>'+
-            '</div>'+
-          '</div>'+
-          '<div style="display:flex;gap:6px;margin-left:12px">'+
-            '<button class="btn btn-p btn-xs" onclick="logRevision(\''+pid+'\','+limit+')">+ Log Revision</button>'+
-            (over?'<button class="btn btn-g btn-xs" onclick="raiseChangeOrder(\''+pid+'\')" style="color:var(--danger)">Change Order</button>':'')+
-          '</div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="rev-dots">'+dots.join('')+'</div>'+
-      (logs.length?'<div class="rev-log">'+
-        logs.slice(0,3).map(function(l){return '<div class="rev-log-entry">'+fmtDateShort(l.ts)+' — '+esc(l.note||'Revision logged')+'</div>';}).join('')+
-        (logs.length>3?'<div class="rev-log-entry" style="color:var(--ink4)">+'+( logs.length-3)+' more…</div>':'')+'</div>':'')+'</div>';
-  }).join('');
-}
+//rm:renderRevisions
 function openAddRevision(){
   var ps=document.getElementById('rv-proj');
   if(ps)ps.innerHTML='<option value="">Select project...</option>'+D.projects.filter(function(p){return p.status!=='done';}).map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('');
@@ -6199,7 +6035,9 @@ function drawBars(elId,data,opts){
     var lx=grpX+grpW/2;
     bars+='<text x="'+lx+'" y="'+(H-padB+14)+'" class="chart-axis" text-anchor="middle">'+esc(d.label)+'</text>';
   });
-  el.innerHTML='<svg width="100%" viewBox="0 0 '+W2+' '+H+'" class="chart-svg">'+lines+bars+'</svg>';
+  // Set container height to match SVG so nothing clips
+  el.style.height=H+'px';
+  el.innerHTML='<svg width="100%" height="100%" viewBox="0 0 '+W2+' '+H+'" preserveAspectRatio="xMidYMid meet" class="chart-svg">'+lines+bars+'</svg>';
 }
 
 // Draw a line chart with dots and hover
@@ -6251,7 +6089,8 @@ function drawLine(elId,series,opts){
       dots+='<text x="'+p.x+'" y="'+(H-padB+14)+'" class="chart-axis" text-anchor="middle">'+esc(p.l)+'</text>';
     });
   });
-  el.innerHTML='<svg width="100%" viewBox="0 0 '+W2+' '+H+'" class="chart-svg">'+gridLines+paths+dots+'</svg>';
+  el.style.height=H+'px';
+  el.innerHTML='<svg width="100%" height="100%" viewBox="0 0 '+W2+' '+H+'" preserveAspectRatio="xMidYMid meet" class="chart-svg">'+gridLines+paths+dots+'</svg>';
 }
 
 // SVG Donut chart — returns SVG string or renders into element
@@ -6383,11 +6222,11 @@ function renderMonthChart(){
     var earn=earnings(mE);
     var lbl=d.toLocaleDateString('en-GB',{month:'short'});
     months.push({label:lbl,bars:[
-      {val:hrs,color:'var(--ink4)',tip:lbl+' hours: '+hrs.toFixed(1)+'h'},
-      {val:earn/50,color:'var(--ink)',tip:lbl+' earnings: '+money(earn)}
+      {val:hrs,color:'var(--ink4)',tip:lbl+': '+hrs.toFixed(1)+'h tracked'},
+      {val:earn>0?Math.max(hrs*0.1,earn/100):0,color:'var(--ink)',tip:lbl+': '+money(earn)+' earned'}
     ]});
   }
-  drawBars('month-chart',months,{h:130,padL:32,padB:22,padR:8,padT:8,decimals:1});
+  drawBars('month-chart',months,{h:140,padL:36,padB:24,padR:10,padT:10,decimals:1});
 }
 
 function renderProjRevenueChart(){
@@ -6794,48 +6633,7 @@ function addLog(ic,msg){
   save();
 }
 
-function renderHistory(){
-  var search=(document.getElementById('hist-search')?document.getElementById('hist-search').value:'').toLowerCase();
-  var filter=document.getElementById('hist-filter')?document.getElementById('hist-filter').value:'';
-  var all=D.history||[];
-  // Apply filters
-  var filtered=all;
-  if(search)filtered=filtered.filter(function(h){return (h.msg||'').toLowerCase().includes(search)||(h.ic||'').toLowerCase().includes(search);});
-  if(filter){
-    var fmap={timer:['timer','start','stop','pause','resume','entry','pomodoro'],project:['project','proj'],invoice:['invoice','inv'],client:['client'],task:['task'],export:['export','download','print','csv','backup']};
-    var keys=fmap[filter]||[];
-    filtered=filtered.filter(function(h){return keys.some(function(k){return (h.msg||'').toLowerCase().includes(k)||(h.ic||'').toLowerCase().includes(k);});});
-  }
-  var el=document.getElementById('hist-ct');
-  if(el)el.textContent=filtered.length+' event'+(filtered.length!==1?'s':'')+(search||filter?' (filtered)':'');
-  var foot=document.getElementById('hist-foot');
-  if(foot&&all.length)foot.textContent='Total: '+all.length+' events · Since: '+new Date(all[all.length-1].ts).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-  var list=document.getElementById('hist-list');
-  if(!list)return;
-  if(!filtered.length){list.innerHTML='<div class="empty" style="padding:28px"><div class="empty-ic">◱</div><p>'+(search||filter?'No matching events':'No history yet. Actions you take will appear here.')+'</p></div>';return;}
-  // Group by date
-  var grouped={};
-  filtered.forEach(function(h){
-    var d=new Date(h.ts).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-    if(!grouped[d])grouped[d]=[];
-    grouped[d].push(h);
-  });
-  var html='';
-  Object.keys(grouped).forEach(function(date){
-    html+='<div style="font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);padding:10px 0 4px;border-bottom:1px solid var(--border);margin-bottom:4px">'+date+'</div>';
-    grouped[date].forEach(function(h){
-      var ts=new Date(h.ts).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-      var hid=h.id||'';
-      html+='<div class="lrow" id="lr-'+hid+'">'
-           +'<div class="lic">'+esc(h.ic||'○')+'</div>'
-           +'<div class="lt">'+ts+'</div>'
-           +'<div class="lm">'+esc(h.msg||'')+'</div>'
-           +'<button class="l-del" onclick="deleteHistEntry(\''+hid+'\')" title="Delete this entry">✕</button>'
-           +'</div>';
-    });
-  });
-  list.innerHTML=html;
-}
+//rm:renderHistory
 
 function deleteHistEntry(id){
   D.history=(D.history||[]).filter(function(h){return h.id!==id;});
@@ -7000,6 +6798,825 @@ function goPage(page){
     if(page==='tax'){renderTaxChart();}
   },80);
 }
+// ─── GOOGLE DRIVE SYNC (no client ID setup needed) ────
+// Uses Google's implicit OAuth flow - user just clicks sign in
+
+//rm:connectGoogleDrive
+
+//rm:gSaveToken
+
+//rm:gLoadToken
+
+//rm:gOnConnected
+
+//rm:driveDisconnect
+
+//rm:gSetStatus
+
+//rm:gReq
+
+//rm:gFindFile
+
+
+
+//rm:driveSync
+
+// Check for token on page load (handles popup redirect flow)
+//rm:checkDriveTokenOnLoad
+
+// Auto-save hook: push to Drive after save
+//rm:initDriveSaveHook
+
+// ─── renderIntegrations — no client ID fields ─────────
+//rm:renderIntegrations
+
+// ─── ICS EXPORTS ───────────────────────────────────────
+//rm:exportICS
+
+//rm:exportTasksICS
+
+// Remove old Google-API dependent functions
+//rm:connectGoogleCalendar
+//rm:connectGoogleSheets
+//rm:saveGoogleClientId
+//rm:backupToDrive
+//rm:openSheetsTemplate
+// ═══════════════════════════════════════════════
+// FILE SYSTEM SYNC — no Google auth, no OAuth
+// Uses browser File System Access API natively
+// ═══════════════════════════════════════════════
+var _syncDirHandle=null;
+var _syncAutoTimer=null;
+var _syncPending=false;
+
+// Check if File System Access API is available
+function fsaSupported(){
+  // Not available if: function missing, or running in an iframe (cross-origin sandbox)
+  if(typeof window.showDirectoryPicker!=='function') return false;
+  try{
+    // If we're in an iframe, window.top !== window
+    // and showDirectoryPicker will throw cross-origin error
+    if(window.self!==window.top) return false;
+  }catch(e){
+    // Accessing window.top threw — definitely in cross-origin iframe
+    return false;
+  }
+  return true;
+}
+
+// Let user pick a folder — stores handle for future auto-saves
+async function pickSyncFolder(){
+  if(!fsaSupported()){
+    document.getElementById('filesync-no-folder').style.display='none';
+    document.getElementById('filesync-fallback').style.display='block';
+    // If in iframe/preview, show a helpful message
+    try{
+      if(window.self!==window.top){
+        notify('Open the downloaded HTML file directly in your browser to use folder sync.',true);
+        return;
+      }
+    }catch(e){}
+    notify('Your browser does not support folder sync — use Download Backup instead.',true);
+    return;
+  }
+  try{
+    var handle=await window.showDirectoryPicker({mode:'readwrite',startIn:'documents'});
+    _syncDirHandle=handle;
+    // Save the folder name (can't persist the handle across sessions without storage API)
+    try{localStorage.setItem('st_sync_folder_name',handle.name);}catch(e){}
+    syncFolderConnected(handle.name);
+    // Immediately sync current data
+    await syncToFile();
+    notify('Sync folder set: '+handle.name+' ✓');
+  }catch(e){
+    if(e.name!=='AbortError'){
+      notify('Could not access folder: '+e.message,true);
+    }
+  }
+}
+
+function syncFolderConnected(folderName){
+  var noFolder=document.getElementById('filesync-no-folder');
+  var hasFolder=document.getElementById('filesync-has-folder');
+  var nameEl=document.getElementById('filesync-folder-name');
+  var statusEl=document.getElementById('filesync-status');
+  if(noFolder)noFolder.style.display='none';
+  if(hasFolder)hasFolder.style.display='block';
+  if(nameEl)nameEl.innerHTML='<span style="font-size:16px">✓</span> Syncing to: <strong>'+esc(folderName)+'</strong>';
+  if(statusEl){statusEl.textContent='Connected';statusEl.style.color='var(--success)';}
+  // Auto-sync on changes (check every 5s if pending)
+  clearInterval(_syncAutoTimer);
+  _syncAutoTimer=setInterval(function(){
+    if(_syncPending&&_syncDirHandle){
+      _syncPending=false;
+      syncToFile();
+    }
+  },5000);
+}
+
+async function syncToFile(){
+  if(!_syncDirHandle){notify('No sync folder selected',true);return;}
+  try{
+    var fileHandle=await _syncDirHandle.getFileHandle('solentrack-data.json',{create:true});
+    var writable=await fileHandle.createWritable();
+    var data=JSON.stringify(Object.assign({},D,{_savedAt:new Date().toISOString()}),null,2);
+    await writable.write(data);
+    await writable.close();
+    var statusEl=document.getElementById('filesync-status');
+    if(statusEl)statusEl.textContent='Synced '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    var bar=document.getElementById('sync-bar');
+    var lbl=document.getElementById('sync-label');
+    var last=document.getElementById('sync-last');
+    if(bar)bar.style.display='flex';
+    if(lbl)lbl.textContent='Synced to file';
+    if(last)last.textContent='Last sync: '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    var dot=document.getElementById('sync-dot');
+    if(dot)dot.className='sync-dot synced';
+  }catch(e){
+    var statusEl2=document.getElementById('filesync-status');
+    if(statusEl2)statusEl2.textContent='Sync error';
+    notify('Sync error: '+e.message,true);
+  }
+}
+
+async function loadFromFile(){
+  if(!_syncDirHandle){notify('No sync folder selected',true);return;}
+  try{
+    var fileHandle=await _syncDirHandle.getFileHandle('solentrack-data.json');
+    var file=await fileHandle.getFile();
+    var text=await file.text();
+    var data=JSON.parse(text);
+    if(data&&(data.entries!==undefined||data.projects!==undefined)){
+      var merged=Object.assign({},D,data);
+      if(data.cfg)merged.cfg=Object.assign({},D.cfg,data.cfg);
+      D=merged;
+      save();renderDash();updateSB();syncSelects();
+      notify('Data loaded from sync file ✓');
+    } else {
+      notify('File does not contain valid SolenTrack data',true);
+    }
+  }catch(e){
+    notify('Could not read file: '+e.message,true);
+  }
+}
+
+function stopFileSync(){
+  _syncDirHandle=null;
+  clearInterval(_syncAutoTimer);
+  try{localStorage.removeItem('st_sync_folder_name');}catch(e){}
+  var noFolder=document.getElementById('filesync-no-folder');
+  var hasFolder=document.getElementById('filesync-has-folder');
+  var statusEl=document.getElementById('filesync-status');
+  if(noFolder)noFolder.style.display='block';
+  if(hasFolder)hasFolder.style.display='none';
+  if(statusEl){statusEl.textContent='Not syncing';statusEl.style.color='var(--ink3)';}
+  var bar=document.getElementById('sync-bar');
+  if(bar)bar.style.display='none';
+  notify('File sync stopped');
+}
+
+// Restore sync folder name on load (handle itself cannot be persisted)
+function checkFileSyncOnLoad(){
+  // If running in iframe (Claude preview etc), show fallback immediately
+  var inIframe=false;
+  try{inIframe=(window.self!==window.top);}catch(e){inIframe=true;}
+  if(inIframe||!fsaSupported()){
+    setTimeout(function(){
+      var noFolder=document.getElementById('filesync-no-folder');
+      var fallback=document.getElementById('filesync-fallback');
+      if(noFolder)noFolder.style.display='none';
+      if(fallback)fallback.style.display='block';
+    },100);
+    return;
+  }
+  // Check if we had a folder set before
+  try{
+    var name=localStorage.getItem('st_sync_folder_name');
+    if(name&&fsaSupported()){
+      // Show 'reconnect' state — user needs to reselect on new session
+      var noFolder=document.getElementById('filesync-no-folder');
+      if(noFolder)noFolder.innerHTML=
+        '<div style="background:var(--bg);border-radius:8px;padding:12px;margin-bottom:10px;font-size:12px;color:var(--ink2)">'
+        +'Previously synced to: <strong>'+esc(name)+'</strong><br>'
+        +'Click below to reconnect (required each session).'
+        +'</div>'
+        +'<button class="btn btn-p btn-sm" style="width:100%" onclick="pickSyncFolder()">📁 Reconnect: '+esc(name)+'</button>';
+    } else if(!fsaSupported()){
+      // Browser doesn't support it — show fallback immediately
+      setTimeout(function(){
+        var noFolder=document.getElementById('filesync-no-folder');
+        var fallback=document.getElementById('filesync-fallback');
+        if(noFolder)noFolder.style.display='none';
+        if(fallback)fallback.style.display='block';
+      },100);
+    }
+  }catch(e){}
+}
+
+// Hook into save() to mark sync pending
+var _origSave_fs=save;
+function initFileSyncHook(){
+  // Wrap save to trigger file sync
+  var _origFn=save;
+  window.save=function(){
+    _origFn();
+    if(_syncDirHandle){
+      _syncPending=true;
+    }
+  };
+}
+
+// ─── Remove all Google OAuth code ──────────────────────
+// Stubs to prevent errors if old code references them
+var gToken=null;
+function connectGoogleDrive(){ pickSyncFolder(); }
+function drivePush(){ if(_syncDirHandle)syncToFile(); else exportJSON(); }
+function drivePull(){ if(_syncDirHandle)loadFromFile(); else importJSON(); }
+function driveSync(){ if(_syncDirHandle&&_syncPending){_syncPending=false;syncToFile();} }
+function driveDisconnect(){ stopFileSync(); }
+function gSaveToken(){}
+function gLoadToken(){ return false; }
+function gOnConnected(){}
+function checkDriveTokenOnLoad(){ checkFileSyncOnLoad(); }
+function initDriveSaveHook(){
+  // Wrap save() to trigger Drive push and file sync on changes
+  var _origSave=save;
+  window.save=function(){
+    _origSave();
+    // Google Drive auto-sync (debounced 3s)
+    if(typeof gToken!=='undefined'&&gToken){
+      clearTimeout(window._gDrivePushTimer);
+      window._gDrivePushTimer=setTimeout(function(){if(typeof drivePush==='function')drivePush();},3000);
+    }
+    // File system sync
+    if(typeof _syncDirHandle!=='undefined'&&_syncDirHandle){
+      if(typeof _syncPending!=='undefined')_syncPending=true;
+    }
+  };
+}
+function renderIntegrations(){
+  checkFileSyncOnLoad();
+}
+
+// ─── Calendar exports ────────────────────────────────────
+function exportICS(){ exportAllToICS(); }
+function connectGoogleCalendar(){ exportAllToICS(); }
+function connectGoogleSheets(){ exportCSV(); }
+function saveGoogleClientId(){ notify('No setup needed'); }
+function backupToDrive(){ if(_syncDirHandle)syncToFile(); else exportJSON(); }
+function openSheetsTemplate(){ exportCSV(); }
+
+function exportTasksICS(){
+  var lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SolenTrack//EN','CALSCALE:GREGORIAN'];
+  var added=0;
+  D.tasks.filter(function(t){return t.due&&t.status!=='done';}).forEach(function(t){
+    var dt=t.due.replace(/-/g,'');
+    lines.push('BEGIN:VEVENT','UID:'+t.id+'@solentrack',
+      'DTSTART;VALUE=DATE:'+dt,'DTEND;VALUE=DATE:'+dt,
+      'SUMMARY:Task: '+t.name+(t.project?' ['+pname(t.project)+']':''),
+      'BEGIN:VALARM','TRIGGER:-PT1H','ACTION:DISPLAY','DESCRIPTION:Task due: '+t.name,'END:VALARM',
+      'END:VEVENT');
+    added++;
+  });
+  lines.push('END:VCALENDAR');
+  var blob=new Blob([lines.join('\r\n')],{type:'text/calendar;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tasks-'+today()+'.ics';a.click();
+  notify('Task deadlines exported ('+added+' tasks)');
+}
+
+function initGoogleAuth(){
+  if(typeof google==='undefined'||!google.accounts){
+    setTimeout(initGoogleAuth,500);
+    return;
+  }
+  try{
+    gTokenClient=google.accounts.oauth2.initTokenClient({
+      client_id:G_CLIENT_ID,
+      scope:G_SCOPE,
+      callback:function(resp){
+        if(resp.error){notify('Google sign-in failed: '+resp.error,true);return;}
+        gToken=resp.access_token;
+        var exp=Date.now()+(parseInt(resp.expires_in)||3600)*1000-60000;
+        try{localStorage.setItem('st_gt',gToken);localStorage.setItem('st_gt_exp',String(exp));}catch(e){}
+        gOnConnected();
+      }
+    });
+    renderGoogleSignInBtn();
+    if(gLoadToken())gOnConnected();
+  }catch(e){console.warn('GIS init:',e);}
+}
+
+function renderGoogleSignInBtn(){
+  var el=document.getElementById('g-signin-btn');
+  if(!el||typeof google==='undefined')return;
+  try{
+    el.innerHTML='';
+    google.accounts.id.initialize({client_id:G_CLIENT_ID,auto_select:false});
+    google.accounts.id.renderButton(el,{theme:'outline',size:'large',width:280,text:'signin_with'});
+  }catch(e){
+    el.innerHTML='<button onclick="connectGoogleDrive()" class="btn btn-p btn-sm" style="width:100%">Sign in with Google</button>';
+  }
+}
+
+
+// ─── Stubs for removed functions ────────────────────
+function gSignIn(){ connectGoogleDrive(); }
+function gSignOut(){ driveDisconnect(); }
+function gCalSignIn(){ exportAllToICS(); }
+function gCalSignOut(){ notify('Calendar disconnected'); }
+function gCalPushAll(){ exportAllToICS(); }
+function gDrivePush(){ drivePush(); }
+function gDrivePull(){ drivePull(); }
+
+// ═══════════════════════════════════════════════
+// APP VERSION
+// ═══════════════════════════════════════════════
+var APP_VERSION='2.0.0';
+
+// ─── SETTINGS — saveSettings ────────────────────
+function saveSettings(){
+  var c=D.cfg;
+  c.name=gv('cfg-name')||'SolenVisuals';
+  c.email=gv('cfg-email')||'hello@solenvisuals.com';
+  c.phone=gv('cfg-phone')||'';
+  c.web=gv('cfg-web')||'www.solenvisuals.com';
+  c.addr=gv('cfg-addr')||'London, United Kingdom';
+  c.vat=gv('cfg-vat')||'';
+  c.reg=gv('cfg-reg')||'';
+  c.cur=gv('cfg-cur')||'£';
+  c.rate=parseFloat(gv('cfg-rate'))||0;
+  c.bill=parseInt(gv('cfg-bill'))||0;
+  c.hoursWeek=parseFloat(gv('cfg-hours-week'))||40;
+  c.workDays=parseInt(gv('cfg-work-days'))||5;
+  c.fyStart=parseInt(gv('cfg-fy-start'))||4;
+  c.terms=gv('cfg-terms')||'Payment due within 30 days.';
+  c.footer=gv('cfg-footer')||'Thank you for your business.';
+  c.taxPct=parseFloat(gv('cfg-tax-pct'))||0;
+  c.invPrefix=gv('cfg-inv-prefix')||'INV-';
+  var nin=parseInt(gv('cfg-next-inv'));
+  if(nin>0)D.nextInv=nin;
+  c.notifyIdle=document.getElementById('cfg-notify-idle')?document.getElementById('cfg-notify-idle').checked:false;
+  c.notifyInvoice=document.getElementById('cfg-notify-invoice')?document.getElementById('cfg-notify-invoice').checked:true;
+  c.notifyDeadline=document.getElementById('cfg-notify-deadline')?document.getElementById('cfg-notify-deadline').checked:true;
+  c.autoStop=document.getElementById('cfg-auto-stop')?document.getElementById('cfg-auto-stop').checked:false;
+  c.sbWidth=parseInt(gv('cfg-sb-width'))||240;
+  c.startPage=gv('cfg-start-page')||'dash';
+  // Apply sidebar width
+  document.documentElement.style.setProperty('--sb',c.sbWidth+'px');
+  save();
+  notify('Settings saved ✓');
+  addLog('⚙','Settings updated');
+}
+
+function applyTermsPreset(v){
+  if(!v)return;
+  var el=document.getElementById('cfg-terms');
+  if(el)el.value=v;
+}
+
+function applyTheme(name){
+  // Update chips
+  document.querySelectorAll('.theme-chip').forEach(function(el){
+    el.classList.toggle('active',el.dataset.theme===name);
+    el.style.border=el.dataset.theme===name?'2px solid var(--ink)':'2px solid var(--border)';
+  });
+  D.cfg.theme=name;
+  var root=document.documentElement;
+  if(name==='light'){
+    root.style.setProperty('--bg','#f8f8f6');
+    root.style.setProperty('--surface','#ffffff');
+    root.style.setProperty('--surface2','#f2f2f0');
+    root.style.setProperty('--ink','#0a0a0a');
+    root.style.setProperty('--ink2','#1a1a1a');
+    root.style.setProperty('--ink3','#666');
+    root.style.setProperty('--ink4','#bbb');
+    root.style.setProperty('--border','#e0e0e0');
+    root.style.setProperty('--border2','#c0c0c0');
+  } else if(name==='midnight'){
+    root.style.setProperty('--bg','#0d1117');
+    root.style.setProperty('--surface','#161b22');
+    root.style.setProperty('--surface2','#21262d');
+    root.style.setProperty('--ink','#e6edf3');
+    root.style.setProperty('--ink2','#c9d1d9');
+    root.style.setProperty('--ink3','#8b949e');
+    root.style.setProperty('--ink4','#3d444d');
+    root.style.setProperty('--border','#30363d');
+    root.style.setProperty('--border2','#6e7681');
+  } else if(name==='ink'){
+    root.style.setProperty('--bg','#1a1a2e');
+    root.style.setProperty('--surface','#16213e');
+    root.style.setProperty('--surface2','#0f3460');
+    root.style.setProperty('--ink','#e94560');
+    root.style.setProperty('--ink2','#e0e0e0');
+    root.style.setProperty('--ink3','#8a8a9a');
+    root.style.setProperty('--ink4','#3a3a5a');
+    root.style.setProperty('--border','#0f3460');
+    root.style.setProperty('--border2','#e94560');
+  } else {
+    // Default dark
+    root.style.removeProperty('--bg');root.style.removeProperty('--surface');
+    root.style.removeProperty('--surface2');root.style.removeProperty('--ink');
+    root.style.removeProperty('--ink2');root.style.removeProperty('--ink3');
+    root.style.removeProperty('--ink4');root.style.removeProperty('--border');
+    root.style.removeProperty('--border2');
+  }
+  save();
+}
+
+// ─── renderSettings ──────────────────────────────
+function renderSettings(){
+  var cv=D.cfg;
+  var map={
+    'cfg-name':cv.name||'SolenVisuals',
+    'cfg-email':cv.email||'hello@solenvisuals.com',
+    'cfg-phone':cv.phone||'',
+    'cfg-web':cv.web||'www.solenvisuals.com',
+    'cfg-addr':cv.addr||'London, United Kingdom',
+    'cfg-vat':cv.vat||'',
+    'cfg-reg':cv.reg||'',
+    'cfg-cur':cv.cur||'£',
+    'cfg-rate':cv.rate||'',
+    'cfg-bill':String(cv.bill||0),
+    'cfg-hours-week':cv.hoursWeek||40,
+    'cfg-work-days':String(cv.workDays||5),
+    'cfg-fy-start':String(cv.fyStart||4),
+    'cfg-terms':cv.terms||'Payment due within 30 days.',
+    'cfg-footer':cv.footer||'Thank you for your business.',
+    'cfg-tax-pct':cv.taxPct||'',
+    'cfg-inv-prefix':cv.invPrefix||'INV-',
+    'cfg-next-inv':D.nextInv||1001,
+    'cfg-sb-width':String(cv.sbWidth||240),
+    'cfg-start-page':cv.startPage||'dash'
+  };
+  Object.keys(map).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.value=map[id];
+  });
+  // Checkboxes
+  var chks={'cfg-notify-idle':cv.notifyIdle,'cfg-notify-invoice':cv.notifyInvoice!==false,'cfg-notify-deadline':cv.notifyDeadline!==false,'cfg-auto-stop':cv.autoStop};
+  Object.keys(chks).forEach(function(id){var el=document.getElementById(id);if(el)el.checked=!!chks[id];});
+  // Theme chips
+  var theme=cv.theme||'default';
+  document.querySelectorAll('.theme-chip').forEach(function(el){
+    el.style.border=el.dataset.theme===theme?'2px solid var(--ink)':'2px solid var(--border)';
+  });
+  if(theme&&theme!=='default')applyTheme(theme);
+}
+
+// ─── renderHistory ───────────────────────────────
+function renderHistory(){
+  var search=(document.getElementById('hist-search')?document.getElementById('hist-search').value:'').toLowerCase().trim();
+  var filter=document.getElementById('hist-filter')?document.getElementById('hist-filter').value:'';
+  var all=D.history||[];
+  var filtered=all.slice();
+  if(search)filtered=filtered.filter(function(h){return (h.msg||'').toLowerCase().includes(search);});
+  if(filter){
+    var fmap={timer:['▶','⏸','⏹','timer','start','stop','pomo','session'],
+      project:['project','◻'],invoice:['invoice','🧾'],client:['client','👤'],
+      task:['task','✓'],expense:['expense','💸'],export:['export','↓','backup','csv','ics']};
+    var keys=fmap[filter]||[filter];
+    filtered=filtered.filter(function(h){
+      var text=(h.msg||'').toLowerCase()+(h.ic||'').toLowerCase();
+      return keys.some(function(k){return text.includes(k.toLowerCase());});
+    });
+  }
+  // Stats bar
+  var statsEl=document.getElementById('hist-stats');
+  if(statsEl)statsEl.innerHTML=
+    '<div class="sc"><div class="sc-lbl">Total Events</div><div class="sc-val">'+all.length+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">Today</div><div class="sc-val">'+(all.filter(function(h){return h.ts&&h.ts.startsWith(today())}).length)+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">This Week</div><div class="sc-val">'+(function(){var d=new Date();d.setDate(d.getDate()-7);return all.filter(function(h){return h.ts&&new Date(h.ts)>=d;}).length;})()+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">Showing</div><div class="sc-val">'+filtered.length+'</div></div>';
+  // Count label
+  var ct=document.getElementById('hist-ct');
+  if(ct)ct.textContent=filtered.length+' event'+(filtered.length!==1?'s':'')+(search||filter?' (filtered)':'');
+  var foot=document.getElementById('hist-foot');
+  if(foot&&all.length>0){
+    var oldest=new Date(all[all.length-1].ts);
+    foot.textContent='Since '+oldest.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  }
+  var list=document.getElementById('hist-list');
+  if(!list)return;
+  if(!filtered.length){
+    list.innerHTML='<div class="empty" style="padding:40px"><div class="empty-ic">◱</div><p>'+(search||filter?'No matching events':'No history yet — actions you take appear here.')+'</p></div>';
+    return;
+  }
+  // Group by date
+  var groups={};
+  filtered.forEach(function(h){
+    var d=h.ts?new Date(h.ts):new Date();
+    var key=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    if(!groups[key])groups[key]=[];
+    groups[key].push(h);
+  });
+  var html='';
+  Object.keys(groups).forEach(function(date){
+    html+='<div style="padding:8px 20px 4px;background:var(--bg);position:sticky;top:0;z-index:1;border-bottom:1px solid var(--border)">'
+         +'<span style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)">'+date+'</span>'
+         +'<span style="font-family:var(--mono);font-size:10px;color:var(--ink4);margin-left:8px">('+groups[date].length+')</span>'
+         +'</div>';
+    groups[date].forEach(function(h){
+      var ts=h.ts?new Date(h.ts).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'';
+      var hid=h.id||'';
+      html+='<div class="lrow" id="lr-'+hid+'" style="padding:9px 20px">'
+           +'<div class="lic" style="font-size:15px;width:24px;flex-shrink:0">'+esc(h.ic||'○')+'</div>'
+           +'<div class="lt" style="min-width:72px;font-family:var(--mono);font-size:10px;color:var(--ink3)">'+ts+'</div>'
+           +'<div class="lm" style="flex:1;font-size:13px">'+esc(h.msg||'')+'</div>'
+           +(hid?'<button class="l-del" onclick="deleteHistEntry(\''+hid+'\')" title="Delete">✕</button>':'')
+           +'</div>';
+    });
+  });
+  list.innerHTML=html;
+}
+
+// ─── renderGoals ──────────────────────────────────
+function renderGoals(){
+  var wrap=document.getElementById('goals-wrap');
+  if(!wrap)return;
+  var ws=totSecs(weekEntries()),ts=totSecs(D.entries.filter(function(e){return e.date===today();}));
+  var we=earnings(weekEntries());
+  // Stats
+  var statsEl=document.getElementById('goals-stats');
+  if(statsEl)statsEl.innerHTML=
+    '<div class="sc"><div class="sc-lbl">Goals Set</div><div class="sc-val">'+D.goals.length+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">On Track</div><div class="sc-val" style="color:var(--success)">'
+   +(D.goals.filter(function(g){var c2=g.type==='weekly_hours'?ws/3600:g.type==='daily_hours'?ts/3600:we;return(c2/g.target)>=0.5;}).length)+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">This Week Hrs</div><div class="sc-val">'+(ws/3600).toFixed(1)+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">Today Hrs</div><div class="sc-val">'+(ts/3600).toFixed(1)+'</div></div>';
+  // Week mini-bars
+  var daysEl=document.getElementById('goals-week-days');
+  var barsEl=document.getElementById('goals-week-bars');
+  var weekLbl=document.getElementById('goals-week-label');
+  if(barsEl){
+    var days2=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    var now=new Date(),mon=new Date(now);
+    mon.setDate(now.getDate()-((now.getDay()+6)%7));mon.setHours(0,0,0,0);
+    var todayIdx=(now.getDay()+6)%7;
+    var dailySecs=days2.map(function(_,i){var d=new Date(mon);d.setDate(mon.getDate()+i);return totSecs(D.entries.filter(function(e){return e.date===iso(d);}));});
+    var maxS=Math.max.apply(null,dailySecs)||1;
+    barsEl.innerHTML=dailySecs.map(function(s,i){
+      var h=Math.round((s/maxS)*44)+4;
+      var isToday=i===todayIdx;
+      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">'
+        +'<div style="width:100%;height:'+h+'px;background:'+(isToday?'var(--ink)':'var(--border2)')+';border-radius:3px 3px 0 0;transition:height .3s" title="'+days2[i]+': '+fmtH(s)+'"></div>'
+        +'<div style="font-size:9px;font-family:var(--mono);color:'+(isToday?'var(--ink)':'var(--ink4)')+'">'+days2[i].slice(0,1)+'</div>'
+        +'</div>';
+    }).join('');
+    if(weekLbl)weekLbl.textContent=fmtH(ws)+' this week';
+  }
+  if(!D.goals.length){
+    wrap.innerHTML='<div class="empty"><div class="empty-ic">◎</div><p>No goals set yet. Add a goal to start tracking your targets.</p></div>';
+    return;
+  }
+  wrap.innerHTML=D.goals.map(function(g){
+    var cur2=g.type==='weekly_hours'?ws/3600:g.type==='daily_hours'?ts/3600:we;
+    var pct=Math.min(100,Math.round((cur2/(g.target||1))*100));
+    var done=pct>=100;
+    var typeLabel=g.type==='weekly_hours'?'Weekly Hours':g.type==='daily_hours'?'Daily Hours':'Weekly Earnings';
+    var curLabel=g.type==='weekly_earnings'?money(cur2):cur2.toFixed(1)+'h';
+    var tgtLabel=g.type==='weekly_earnings'?money(g.target):g.target+'h';
+    var color=done?'var(--success)':pct>=60?'var(--ink)':pct>=30?'var(--warn)':'var(--danger)';
+    return '<div class="card" style="padding:18px 20px">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">'
+      +'<div>'
+      +'<div style="font-size:15px;font-weight:600;margin-bottom:3px">'+esc(g.name)+'</div>'
+      +'<div style="font-size:11px;color:var(--ink3);font-family:var(--mono)">'+typeLabel+'</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +(done?'<span style="font-size:18px">🎯</span>':'')
+      +'<span style="font-family:var(--mono);font-size:11px;color:'+color+';font-weight:600">'+pct+'%</span>'
+      +'<button class="btn btn-g btn-sm" onclick="editGoal(\''+g.id+'\')" style="font-size:10px">Edit</button>'
+      +'<button onclick="deleteGoal(\''+g.id+'\')" style="background:none;border:none;color:var(--ink4);cursor:pointer;font-size:13px;padding:4px">✕</button>'
+      +'</div></div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+      +'<span style="font-size:13px;color:var(--ink2);font-family:var(--mono)">'+curLabel+' / '+tgtLabel+'</span>'
+      +'</div>'
+      +'<div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">'
+      +'<div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:4px;transition:width .4s"></div>'
+      +'</div>'
+      +(g.notes?'<div style="font-size:11px;color:var(--ink3);margin-top:8px">'+esc(g.notes)+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+function editGoal(id){
+  var g=D.goals.find(function(x){return x.id===id;});
+  if(!g)return;
+  document.getElementById('m-goal').dataset.editId=id;
+  var nm=document.getElementById('goal-name');
+  var tp=document.getElementById('goal-type');
+  var tg=document.getElementById('goal-target');
+  var nt=document.getElementById('goal-notes');
+  if(nm)nm.value=g.name;
+  if(tp)tp.value=g.type;
+  if(tg)tg.value=g.target;
+  if(nt)nt.value=g.notes||'';
+  om('m-goal');
+}
+
+function deleteGoal(id){
+  D.goals=D.goals.filter(function(g){return g.id!==id;});
+  save();renderGoals();notify('Goal removed');
+}
+
+// ─── renderPipeline ───────────────────────────────
+function renderPipeline(){
+  var cs=document.getElementById('qt-client');
+  if(cs)cs.innerHTML='<option value="">Select client...</option>'+D.clients.map(function(cl){return '<option value="'+cl.id+'">'+esc(cl.name)+'</option>';}).join('');
+  var quotes=D.quotes||[];
+  var filter=document.getElementById('pipe-filter-all')?window._pipeFilter||'':'';
+  // Stats
+  var total=quotes.length;
+  var totalVal=quotes.reduce(function(a,q){return a+(q.value||0);},0);
+  var won=quotes.filter(function(q){return q.stage==='won';});
+  var wonVal=won.reduce(function(a,q){return a+(q.value||0);},0);
+  var active=quotes.filter(function(q){return !['won','lost'].includes(q.stage);});
+  var activeVal=active.reduce(function(a,q){return a+(q.value||0);},0);
+  var statsEl=document.getElementById('pipe-stats');
+  if(statsEl)statsEl.innerHTML=
+    '<div class="sc"><div class="sc-lbl">Total Quotes</div><div class="sc-val">'+total+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">Active Value</div><div class="sc-val">'+money(activeVal)+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">Won</div><div class="sc-val" style="color:var(--success)">'+won.length+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">Won Value</div><div class="sc-val" style="color:var(--success)">'+money(wonVal)+'</div></div>';
+  // Tab highlighting
+  var tabIds=['all','quote','approved','project','invoiced','won','lost'];
+  tabIds.forEach(function(t){
+    var btn=document.getElementById('pipe-tab-'+t);
+    if(!btn)return;
+    var active2=filter===t||(t==='all'&&!filter);
+    btn.style.background=active2?'var(--ink)':'';
+    btn.style.color=active2?'#fff':'var(--ink3)';
+  });
+  // Filter quotes
+  var shown=filter?quotes.filter(function(q){return q.stage===filter;}):quotes;
+  var el=document.getElementById('pipe-list');
+  if(!el)return;
+  if(!quotes.length){
+    el.innerHTML='<div class="empty"><div class="empty-ic">◇</div><p>No quotes yet. Click <b>+ New Quote</b> to add your first.</p></div>';
+    return;
+  }
+  if(!shown.length){
+    el.innerHTML='<div class="empty"><div class="empty-ic">◇</div><p>No quotes in this stage.</p></div>';
+    return;
+  }
+  var STAGE_CFG={
+    quote:{label:'Quote Sent',color:'#6366f1'},
+    approved:{label:'Approved',color:'#06b6d4'},
+    project:{label:'In Progress',color:'#f59e0b'},
+    invoiced:{label:'Invoiced',color:'#8b5cf6'},
+    won:{label:'Won ✓',color:'var(--success)'},
+    lost:{label:'Lost',color:'var(--danger)'}
+  };
+  el.innerHTML=shown.map(function(q){
+    var stage=STAGE_CFG[q.stage]||{label:q.stage,color:'#888'};
+    var cl=q.client?cname(q.client):'';
+    var nexts={quote:['approved','lost'],approved:['project','lost'],project:['invoiced','lost'],invoiced:['won','lost'],won:[],lost:['quote']};
+    var nextStages=nexts[q.stage]||[];
+    return '<div class="card" style="padding:16px 20px;margin-bottom:10px">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">'
+      +'<div style="flex:1">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+      +'<span style="background:'+stage.color+';color:#fff;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:.05em">'+stage.label+'</span>'
+      +(cl?'<span style="font-size:11px;color:var(--ink3)">'+esc(cl)+'</span>':'')
+      +'</div>'
+      +'<div style="font-size:15px;font-weight:600;margin-bottom:4px">'+esc(q.title||q.name||'Untitled')+'</div>'
+      +(q.value?'<div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--ink)">'+money(q.value)+'</div>':'')
+      +(q.date?'<div style="font-size:11px;color:var(--ink3);margin-top:4px">Sent: '+q.date+'</div>':'')
+      +(q.notes?'<div style="font-size:12px;color:var(--ink2);margin-top:6px;line-height:1.5">'+esc(q.notes)+'</div>':'')
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0">'
+      +nextStages.map(function(ns){return '<button class="btn btn-g btn-sm" style="font-size:10px;white-space:nowrap" onclick="advancePipe(\''+q.id+'\',\''+ns+'\')">'+(ns==='won'?'✓ Won':ns==='lost'?'✕ Lost':ns==='approved'?'→ Approve':ns==='project'?'→ Start':ns==='invoiced'?'→ Invoice':ns==='quote'?'↺ Reopen':'→ '+ns)+'</button>';}).join('')
+      +'<button class="btn btn-g btn-sm" style="font-size:10px" onclick="editQuote(\''+q.id+'\')" >Edit</button>'
+      +'<button onclick="deleteQuote(\''+q.id+'\')" style="background:none;border:none;color:var(--ink4);cursor:pointer;font-size:13px;padding:4px">✕</button>'
+      +'</div></div></div>';
+  }).join('');
+}
+
+function pipeFilter(stage){
+  window._pipeFilter=stage;
+  renderPipeline();
+}
+
+function editQuote(id){
+  var q=D.quotes.find(function(x){return x.id===id;});
+  if(!q)return;
+  document.getElementById('m-quote').dataset.editId=id;
+  var fields={'qt-title':q.title||q.name||'','qt-client':q.client||'','qt-value':q.value||'','qt-date':q.date||'','qt-notes':q.notes||''};
+  Object.keys(fields).forEach(function(k){var el=document.getElementById(k);if(el)el.value=fields[k];});
+  document.getElementById('qt-modal-title').textContent='Edit Quote';
+  om('m-quote');
+}
+
+function deleteQuote(id){
+  if(!confirm('Delete this quote?'))return;
+  D.quotes=D.quotes.filter(function(q){return q.id!==id;});
+  save();renderPipeline();notify('Quote deleted');
+}
+
+// ─── renderRevisions ──────────────────────────────
+function renderRevisions(){
+  var el=document.getElementById('rev-list');
+  var statsEl=document.getElementById('rev-stats');
+  if(!el)return;
+  var revisions=D.revisions||[];
+  // Group by project
+  var byProj={};
+  revisions.forEach(function(r){
+    if(!byProj[r.project])byProj[r.project]={limit:2,logs:[]};
+    byProj[r.project].limit=r.limit||byProj[r.project].limit;
+    byProj[r.project].logs.push(r);
+  });
+  // Add active projects with no revisions yet
+  D.projects.filter(function(p){return p.status==='active';}).forEach(function(p){
+    if(!byProj[p.id])byProj[p.id]={limit:2,logs:[]};
+  });
+  var projIds=Object.keys(byProj);
+  // Stats
+  var over=projIds.filter(function(id){var pd=byProj[id];return pd.logs.length>pd.limit;}).length;
+  var atLimit=projIds.filter(function(id){var pd=byProj[id];return pd.logs.length===pd.limit;}).length;
+  if(statsEl)statsEl.innerHTML=
+    '<div class="sc"><div class="sc-lbl">Projects</div><div class="sc-val">'+projIds.length+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">Over Limit</div><div class="sc-val" style="color:var(--danger)">'+over+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">At Limit</div><div class="sc-val" style="color:var(--warn)">'+atLimit+'</div></div>'
+   +'<div class="sc"><div class="sc-lbl">Total Revisions</div><div class="sc-val">'+revisions.length+'</div></div>';
+  if(!projIds.length){
+    el.innerHTML='<div class="empty"><div class="empty-ic">◫</div><p>No active projects yet. Create a project to start tracking revisions.</p></div>';
+    return;
+  }
+  el.innerHTML=projIds.sort(function(a,b){
+    // Sort: over-limit first, then at-limit, then by name
+    var da=byProj[a],db=byProj[b];
+    var oa=da.logs.length>da.limit,ob=db.logs.length>db.limit;
+    if(oa&&!ob)return -1; if(!oa&&ob)return 1;
+    return (pname(a)||'').localeCompare(pname(b)||'');
+  }).map(function(projId){
+    var pd=byProj[projId];
+    var used=pd.logs.length,limit=pd.limit;
+    var over2=used>limit,atLim=used===limit;
+    var pct=Math.min(100,Math.round((used/Math.max(limit,1))*100));
+    var barColor=over2?'var(--danger)':atLim?'var(--warn)':'var(--ink)';
+    var p=D.projects.find(function(x){return x.id===projId;})||{};
+    return '<div class="card" style="padding:16px 20px;margin-bottom:10px">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
+      +'<div style="display:flex;align-items:center;gap:10px">'
+      +'<div style="width:10px;height:10px;border-radius:50%;background:'+(p.color||'#888')+'"></div>'
+      +'<div style="font-size:14px;font-weight:600">'+esc(pname(projId))+'</div>'
+      +(over2?'<span style="background:var(--danger);color:#fff;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">OVER LIMIT</span>':
+        atLim?'<span style="background:var(--warn);color:#fff;font-size:10px;padding:2px 7px;border-radius:4px">AT LIMIT</span>':'')
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<span style="font-family:var(--mono);font-size:13px;font-weight:600">'+used+' / '+limit+'</span>'
+      +'<button class="btn btn-g btn-sm" style="font-size:10px" onclick="setRevisionLimit(\''+projId+'\','+limit+')">Set Limit</button>'
+      +'<button class="btn btn-p btn-sm" style="font-size:10px" onclick="logRevisionForProject(\''+projId+'\','+limit+')">+ Log</button>'
+      +'</div></div>'
+      +'<div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:10px">'
+      +'<div style="height:100%;width:'+pct+'%;background:'+barColor+';border-radius:3px;transition:width .3s"></div>'
+      +'</div>'
+      +(pd.logs.length?
+        '<div style="display:flex;flex-direction:column;gap:4px">'
+        +pd.logs.slice().reverse().map(function(r,ri){
+          return '<div style="display:flex;align-items:center;gap:10px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--bg)">'
+            +'<span style="font-family:var(--mono);color:var(--ink3);font-size:10px;min-width:20px">#'+(pd.logs.length-ri)+'</span>'
+            +'<span style="flex:1;color:var(--ink2)">'+esc(r.note||'Revision round')+'</span>'
+            +'<span style="font-family:var(--mono);font-size:10px;color:var(--ink3)">'+fmtDateShort(r.date||r.ts)+'</span>'
+            +'<button onclick="deleteRevision(\''+r.id+'\')" style="background:none;border:none;color:var(--ink4);cursor:pointer;font-size:11px;padding:2px">✕</button>'
+            +'</div>';
+        }).join('')
+        +'</div>'
+        :'<div style="font-size:12px;color:var(--ink3);font-style:italic">No revisions logged yet</div>')
+      +'</div>';
+  }).join('');
+}
+
+function logRevisionForProject(projId,limit){
+  document.getElementById('m-revision').dataset.editId='';
+  var rp=document.getElementById('rev-proj');if(rp)rp.value=projId;
+  var rl=document.getElementById('rev-limit');if(rl)rl.value=limit;
+  var rd=document.getElementById('rev-date');if(rd)rd.value=today();
+  om('m-revision');
+}
+function setRevisionLimit(projId,current){
+  var newLimit=prompt('Set revision limit for "'+pname(projId)+'":',current);
+  if(!newLimit||isNaN(parseInt(newLimit)))return;
+  var limit=Math.max(1,parseInt(newLimit));
+  // Update all revisions for this project with new limit
+  (D.revisions||[]).filter(function(r){return r.project===projId;}).forEach(function(r){r.limit=limit;});
+  // If no revisions, store in project
+  var p=D.projects.find(function(x){return x.id===projId;});
+  if(p)p.revisionLimit=limit;
+  save();renderRevisions();notify('Limit updated to '+limit);
+}
+function deleteRevision(id){
+  D.revisions=D.revisions.filter(function(r){return r.id!==id;});
+  save();renderRevisions();notify('Revision removed');
+}
+
+// ─── Version display in sidebar ───────────────────
+function renderAppVersion(){
+  var el=document.getElementById('app-version-label');
+  if(el)el.textContent='v'+APP_VERSION;
+}
+
 // ═══════════════════════════════════════════════════
 // KEYBOARD SHORTCUTS
 // ═══════════════════════════════════════════════════
@@ -7090,8 +7707,17 @@ function notify(msg,err=false){
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
-load(); syncSelects(); renderDash(); updateSB();
+load();
+migrateHistory();
+renderAppVersion();
+syncSelects();
+renderDash();
+updateSB();
 setInterval(updateSB, 20000);
+checkDriveTokenOnLoad();
+initDriveSaveHook();
+checkFileSyncOnLoad();
+checkStartupURLParams();
 
 </script>
 
