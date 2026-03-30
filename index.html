@@ -18,8 +18,8 @@
   --sh:0 1px 2px rgba(0,0,0,.05),0 2px 8px rgba(0,0,0,.04);
   --sh2:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.06);
 }
-html,body{min-height:100%;}html{font-size:14px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);display:flex;min-height:100%;overflow-x:hidden;}
+html{height:100%;overflow:hidden;}html body{height:100%;overflow:hidden;}html{font-size:14px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);display:flex;height:100%;overflow:hidden;}
 
 /* ── SIDEBAR ─────────────────────────────── */
 .sb{width:var(–sb);min-height:100vh;background:var(–ink);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;transition:transform .25s cubic-bezier(.4,0,.2,1);overflow-y:auto;}
@@ -51,8 +51,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);display:flex;
 .ov.on{display:block;}
 
 /* ── MAIN ────────────────────────────────── */
-main{margin-left:var(–sb);flex:1;min-width:0;display:flex;flex-direction:column;align-items:stretch;min-height:100vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.pg{display:none;padding:28px 40px 60px;width:100%;max-width:1600px;animation:fadeIn .18s ease;overflow-x:hidden;}
+main{margin-left:var(–sb);flex:1;min-width:0;display:flex;flex-direction:column;align-items:stretch;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.pg{display:none;padding:28px 40px 60px;width:100%;max-width:1600px;animation:fadeIn .18s ease;}
 .pg.on{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
@@ -110,7 +110,21 @@ select option{background:#fff;}
 .cf-inp:focus{border-color:var(–border2);}
 
 /* ── TABLE ───────────────────────────────── */
-.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;}
+.tw table{width:100%;border-collapse:collapse;min-width:0;}
+.tw table th{white-space:nowrap;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(–ink3);padding:9px 14px;border-bottom:2px solid var(–border);text-align:left;font-weight:500;}
+.tw table td{padding:10px 14px;border-bottom:1px solid var(–bg);font-size:13px;vertical-align:middle;}
+.tw table tr:hover td{background:var(–bg);}
+/* Mobile: table becomes card list */
+@media(max-width:640px){
+.tw table thead{display:none;}
+.tw table,.tw table tbody,.tw table tr,.tw table td{display:block;width:100%;}
+.tw table tr{border:1px solid var(–border);border-radius:8px;margin-bottom:10px;padding:12px 14px;background:var(–surface);}
+.tw table td{padding:4px 0;font-size:12px;border:none;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.tw table td:empty{display:none;}
+.tw table td[data-label]:before{content:attr(data-label);font-size:10px;color:var(–ink3);font-weight:500;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;}
+.tw table td:last-child{margin-top:8px;padding-top:8px;border-top:1px solid var(–border);justify-content:flex-end;}
+}
 table{width:100%;border-collapse:collapse;}
 thead th{font-family:var(–mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(–ink3);padding:9px 16px;text-align:left;border-bottom:1px solid var(–border);font-weight:400;white-space:nowrap;background:var(–surface2);}
 tbody tr{border-bottom:1px solid var(–bg);transition:background .1s;}
@@ -176,7 +190,7 @@ td.g{font-family:var(–mono);font-weight:500;color:var(–success);}
 
 /* ── CHARTS ──────────────────────────────── */
 .crow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-.ccard{background:var(–surface);border:1px solid var(–border);border-radius:var(–r);padding:18px;box-shadow:var(–sh);overflow:hidden;}
+.ccard{background:var(–surface);border:1px solid var(–border);border-radius:var(–r);padding:18px;box-shadow:var(–sh);}
 .ctt{font-size:12px;font-weight:600;color:var(–ink2);margin-bottom:14px;}
 .barchart{display:flex;align-items:flex-end;gap:5px;height:72px;}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
@@ -1023,6 +1037,54 @@ padding:10px 0;border-bottom:1px solid var(–border);font-size:13px;
 LOGO PREVIEW
 ══════════════════════════════════════════ */
 #logo-preview img{ max-width:100%;max-height:38px;object-fit:contain; }
+
+/* ── QUICK ACTIONS SHEET ─────────────────── */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.qa-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 10px;background:var(–bg);border:1.5px solid var(–border);border-radius:10px;cursor:pointer;font-size:12px;color:var(–ink2);transition:all .14s;text-align:center;font-family:var(–sans);}
+.qa-btn:hover{border-color:var(–ink);background:var(–surface);color:var(–ink);}
+.qa-icon{font-size:24px;line-height:1;}
+
+/* ── ACTIVITY FEED ───────────────────────── */
+.feed-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(–bg);}
+.feed-item:last-child{border-bottom:none;}
+.feed-dot{width:8px;height:8px;border-radius:50%;background:var(–ink4);flex-shrink:0;margin-top:4px;}
+.feed-dot.new{background:var(–success);}
+.feed-text{font-size:12px;color:var(–ink2);line-height:1.5;}
+.feed-time{font-size:10px;color:var(–ink4);font-family:var(–mono);white-space:nowrap;}
+
+/* ── TIMER RUNNING indicator in sidebar ─── */
+.sb-timer-badge{display:inline-flex;align-items:center;gap:4px;background:var(–danger);color:#fff;border-radius:4px;padding:1px 6px;font-size:9px;font-family:var(–mono);animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ── INVOICE CARD view (mobile fallback) ─── */
+.inv-card{background:var(–surface);border:1px solid var(–border);border-radius:8px;padding:14px 16px;margin-bottom:10px;}
+.inv-card-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.inv-card-num{font-family:var(–mono);font-size:13px;font-weight:700;}
+.inv-card-client{font-size:12px;color:var(–ink3);margin-top:1px;}
+.inv-card-amount{font-family:var(–mono);font-size:16px;font-weight:700;color:var(–ink);}
+
+/* ── SETTINGS SECTION DIVIDER ────────────── */
+.settings-section{background:var(–surface);border:1px solid var(–border);border-radius:var(–r);padding:20px;box-shadow:var(–sh);}
+.settings-section+.settings-section{margin-top:12px;}
+.settings-tt{font-size:13px;font-weight:600;margin-bottom:2px;display:flex;align-items:center;gap:8px;}
+.settings-sub{font-size:11px;color:var(–ink3);margin-bottom:14px;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(–bg);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row-label{font-size:13px;}
+.settings-row-sub{font-size:11px;color:var(–ink3);margin-top:1px;}
+
+/* ── TOGGLE SWITCH ───────────────────────── */
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{position:absolute;inset:0;background:var(–border2);border-radius:11px;cursor:pointer;transition:background .2s;}
+.toggle input:checked+.toggle-track{background:var(–ink);}
+.toggle-thumb{position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;pointer-events:none;}
+.toggle input:checked~.toggle-thumb{transform:translateX(18px);}
+
+/* ── MOBILE TABLE LABELS ─────────────────── */
+@media(max-width:640px){
+.tw-mobile-label{display:inline-block;font-size:10px;color:var(–ink3);text-transform:uppercase;letter-spacing:.06em;min-width:80px;flex-shrink:0;}
+}
 </style>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -1038,6 +1100,7 @@ LOGO PREVIEW
   <button class="mb" onclick="toggleSB()">☰</button>
   <span class="topbar-name">SolenTrack</span>
   <span class="topbar-clock" id="mob-clk">00:00:00</span>
+  <button onclick="openGlobalSearch()" style="background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:18px;padding:0 6px;line-height:1">🔍</button>
 </div>
 
 <!-- BOTTOM NAV — mobile only -->
@@ -1100,6 +1163,7 @@ LOGO PREVIEW
       <div class="sb-tag">TIME MANAGER</div>
     </div>
   </div>
+  <div style="padding:6px 10px 2px"><button onclick="openGlobalSearch()" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:rgba(255,255,255,.45);cursor:pointer;padding:7px 12px;font-size:11px;text-align:left;display:flex;align-items:center;gap:7px"><span>🔍</span><span style="flex:1">Search…</span><span style="font-size:9px;opacity:.4">⌘K</span></button></div>
   <div class="sb-sec">Workspace</div>
   <div class="sb-item on" onclick="go('dash')"><span class="ic">◈</span>Dashboard</div>
   <div class="sb-item" onclick="go('track')"><span class="ic">◷</span>Time Tracker</div>
@@ -7282,42 +7346,9 @@ function gDrivePull(){ drivePull(); }
 // ═══════════════════════════════════════════════
 // APP VERSION
 // ═══════════════════════════════════════════════
-var APP_VERSION=‘2.2.0’;
+var APP_VERSION=‘2.3.0’;
 
 // ─── SETTINGS — saveSettings ────────────────────
-function saveSettings(){
-var c=D.cfg;
-c.name=gv(‘cfg-name’)||‘SolenVisuals’;
-c.email=gv(‘cfg-email’)||‘hello@solenvisuals.com’;
-c.phone=gv(‘cfg-phone’)||’’;
-c.web=gv(‘cfg-web’)||‘www.solenvisuals.com’;
-c.addr=gv(‘cfg-addr’)||‘London, United Kingdom’;
-c.vat=gv(‘cfg-vat’)||’’;
-c.reg=gv(‘cfg-reg’)||’’;
-c.cur=gv(‘cfg-cur’)||‘£’;
-c.rate=parseFloat(gv(‘cfg-rate’))||0;
-c.bill=parseInt(gv(‘cfg-bill’))||0;
-c.hoursWeek=parseFloat(gv(‘cfg-hours-week’))||40;
-c.workDays=parseInt(gv(‘cfg-work-days’))||5;
-c.fyStart=parseInt(gv(‘cfg-fy-start’))||4;
-c.terms=gv(‘cfg-terms’)||‘Payment due within 30 days.’;
-c.footer=gv(‘cfg-footer’)||‘Thank you for your business.’;
-c.taxPct=parseFloat(gv(‘cfg-tax-pct’))||0;
-c.invPrefix=gv(‘cfg-inv-prefix’)||‘INV-’;
-var nin=parseInt(gv(‘cfg-next-inv’));
-if(nin>0)D.nextInv=nin;
-c.notifyIdle=document.getElementById(‘cfg-notify-idle’)?document.getElementById(‘cfg-notify-idle’).checked:false;
-c.notifyInvoice=document.getElementById(‘cfg-notify-invoice’)?document.getElementById(‘cfg-notify-invoice’).checked:true;
-c.notifyDeadline=document.getElementById(‘cfg-notify-deadline’)?document.getElementById(‘cfg-notify-deadline’).checked:true;
-c.autoStop=document.getElementById(‘cfg-auto-stop’)?document.getElementById(‘cfg-auto-stop’).checked:false;
-c.sbWidth=parseInt(gv(‘cfg-sb-width’))||240;
-c.startPage=gv(‘cfg-start-page’)||‘dash’;
-// Apply sidebar width
-document.documentElement.style.setProperty(’–sb’,c.sbWidth+‘px’);
-save();
-notify(‘Settings saved ✓’);
-addLog(‘⚙’,‘Settings updated’);
-}
 
 function applyTermsPreset(v){
 if(!v)return;
@@ -8334,6 +8365,119 @@ if(ca)ca.style.display=‘none’;if(da)da.style.display=‘block’;
 }
 }
 
+// ═══════════════════════════════════════════════
+// v2.3.0 FEATURES
+// ═══════════════════════════════════════════════
+
+function applySettingsTheme(){
+var theme=D.cfg.theme||‘default’;
+if(!theme||theme===‘default’){
+[’–bg’,’–surface’,’–surface2’,’–ink’,’–ink2’,’–ink3’,’–ink4’,’–border’,’–border2’].forEach(function(p){
+document.documentElement.style.removeProperty(p);
+});
+} else { applyTheme(theme); }
+}
+
+function updateTimerIndicator(){
+document.querySelectorAll(’.sb-item’).forEach(function(el){
+var badge=el.querySelector(’.sb-timer-badge’);
+if(el.getAttribute(‘onclick’)===“go(‘track’)”){
+if(typeof timerInterval!==‘undefined’&&timerInterval){
+if(!badge){badge=document.createElement(‘span’);badge.className=‘sb-timer-badge’;badge.textContent=‘●’;el.appendChild(badge);}
+} else { if(badge)badge.remove(); }
+}
+});
+}
+
+function isMobile(){ return window.innerWidth<=640; }
+
+function applyStartupSettings(){
+var cfg=D.cfg;
+if(cfg.sbWidth)document.documentElement.style.setProperty(’–sb’,cfg.sbWidth+‘px’);
+if(cfg.theme&&cfg.theme!==‘default’)applyTheme(cfg.theme);
+}
+
+function saveSettings(){
+var cfg=D.cfg;
+cfg.name=gv(‘cfg-name’)||‘SolenVisuals’;
+cfg.email=gv(‘cfg-email’)||‘hello@solenvisuals.com’;
+cfg.phone=gv(‘cfg-phone’)||’’;
+cfg.web=gv(‘cfg-web’)||‘www.solenvisuals.com’;
+cfg.addr=gv(‘cfg-addr’)||‘London, United Kingdom’;
+cfg.vat=gv(‘cfg-vat’)||’’;
+cfg.reg=gv(‘cfg-reg’)||’’;
+cfg.cur=gv(‘cfg-cur’)||‘£’;
+cfg.rate=parseFloat(gv(‘cfg-rate’))||0;
+cfg.bill=parseInt(gv(‘cfg-bill’))||0;
+cfg.hoursWeek=parseFloat(gv(‘cfg-hours-week’))||40;
+cfg.workDays=parseInt(gv(‘cfg-work-days’))||5;
+cfg.fyStart=parseInt(gv(‘cfg-fy-start’))||4;
+cfg.terms=gv(‘cfg-terms’)||‘Payment due within 30 days.’;
+cfg.footer=gv(‘cfg-footer’)||‘Thank you for your business.’;
+cfg.taxPct=parseFloat(gv(‘cfg-tax-pct’))||0;
+cfg.invPrefix=gv(‘cfg-inv-prefix’)||‘INV-’;
+var nin=parseInt(gv(‘cfg-next-inv’));if(nin>0)D.nextInv=nin;
+[‘cfg-notify-idle’,‘cfg-notify-invoice’,‘cfg-notify-deadline’,‘cfg-auto-stop’].forEach(function(id){
+var el=document.getElementById(id);if(el)cfg[id.replace(‘cfg-’,’’)]=el.checked;
+});
+cfg.sbWidth=parseInt(gv(‘cfg-sb-width’))||240;
+cfg.startPage=gv(‘cfg-start-page’)||‘dash’;
+document.documentElement.style.setProperty(’–sb’,cfg.sbWidth+‘px’);
+save();notify(‘Settings saved ✓’);addLog(‘⚙’,‘Settings saved’);
+}
+
+// ─── GLOBAL SEARCH ────────────────────────────
+function openGlobalSearch(){
+om(‘global-search-modal’);
+setTimeout(function(){
+var i=document.getElementById(‘gsearch-input’);
+if(i){i.value=’’;i.focus();globalSearch(’’);}
+},80);
+}
+
+function closeGlobalSearch(){ cm(‘global-search-modal’); }
+
+function globalSearch(query){
+var el=document.getElementById(‘gsearch-results’);if(!el)return;
+var q=(query||’’).toLowerCase().trim();
+if(!q){
+el.innerHTML=’’;
+var placeholder=document.createElement(‘div’);
+placeholder.style.cssText=‘color:var(–ink3);font-size:13px;padding:20px 0;text-align:center’;
+placeholder.textContent=‘Search projects, clients, invoices, tasks…’;
+el.appendChild(placeholder);
+return;
+}
+var results=[];
+D.projects.forEach(function(p){if((p.name||’’).toLowerCase().includes(q))results.push({type:‘Project’,icon:‘◻’,label:p.name,sub:p.status||’’,page:‘projects’});});
+D.clients.forEach(function(cl){if((cl.name||’’).toLowerCase().includes(q)||(cl.company||’’).toLowerCase().includes(q))results.push({type:‘Client’,icon:‘○’,label:cl.name,sub:cl.company||cl.email||’’,page:‘clients’});});
+D.invoices.forEach(function(inv){if((inv.number||’’).toLowerCase().includes(q))results.push({type:‘Invoice’,icon:‘🧾’,label:inv.number,sub:cname(inv.client)+’ — ‘+money(inv.amount),page:‘invoices’});});
+D.tasks.forEach(function(t){if((t.name||’’).toLowerCase().includes(q))results.push({type:‘Task’,icon:‘✓’,label:t.name,sub:pname(t.project)||’’,page:‘tasks’});});
+D.entries.filter(function(e){return (e.desc||’’).toLowerCase().includes(q);}).slice(0,4).forEach(function(e){results.push({type:‘Entry’,icon:‘◷’,label:e.desc||’—’,sub:pname(e.project)+’ · ‘+e.date,page:‘track’});});
+el.innerHTML=’’;
+if(!results.length){
+var noRes=document.createElement(‘div’);
+noRes.style.cssText=‘color:var(–ink3);font-size:13px;padding:20px 0;text-align:center’;
+noRes.textContent=‘No results’;
+el.appendChild(noRes);
+return;
+}
+results.slice(0,10).forEach(function(r){
+var row=document.createElement(‘div’);
+row.style.cssText=‘display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:6px;cursor:pointer;border-bottom:1px solid var(–border)’;
+row.innerHTML=’<span style="font-size:16px;width:24px;text-align:center;flex-shrink:0">’+r.icon+’</span>’
++’<div style="flex:1;min-width:0">’
++’<div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">’+esc(r.label)+’</div>’
++(r.sub?’<div style="font-size:11px;color:var(--ink3)">’+esc(r.sub)+’</div>’:’’)
++’</div>’
++’<span style="font-size:10px;color:var(--ink4);background:var(--bg);border-radius:4px;padding:2px 7px;flex-shrink:0">’+r.type+’</span>’;
+row.addEventListener(‘mouseenter’,function(){this.style.background=‘var(–bg)’;});
+row.addEventListener(‘mouseleave’,function(){this.style.background=’’;});
+row.addEventListener(‘click’,(function(page){return function(){closeGlobalSearch();go(page);};})(r.page));
+el.appendChild(row);
+});
+}
+
 // ═══════════════════════════════════════════════════
 // KEYBOARD SHORTCUTS
 // ═══════════════════════════════════════════════════
@@ -8522,6 +8666,19 @@ function idbLoad(cb){try{var rq=indexedDB.open(‘ST’,1);rq.onupgradeneeded=fu
     <div class="mhd"><h2 id="kanban-modal-title">Task Details</h2><button class="mx" onclick="cm('m-kanban')">✕</button></div>
     <div id="kanban-modal-body"></div>
     <div class="mft"><button class="btn btn-g" onclick="cm('m-kanban')">Close</button></div>
+  </div>
+</div>
+
+<!-- GLOBAL SEARCH -->
+
+<div class="mbg" id="global-search-modal" onclick="if(event.target===this)closeGlobalSearch()">
+  <div class="modal" style="width:560px;max-width:calc(100vw - 32px);max-height:80vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)">
+      <span style="font-size:16px;color:var(--ink3)">🔍</span>
+      <input id="gsearch-input" class="fi" placeholder="Search everything…" oninput="globalSearch(this.value)" style="border:none;background:none;font-size:14px;flex:1;padding:0;outline:none" autocomplete="off"/>
+      <button onclick="closeGlobalSearch()" style="background:none;border:1px solid var(--border);border-radius:5px;color:var(--ink3);cursor:pointer;padding:3px 8px;font-size:11px">ESC</button>
+    </div>
+    <div id="gsearch-results" style="overflow-y:auto;max-height:60vh;padding:6px"></div>
   </div>
 </div>
 
